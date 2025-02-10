@@ -2,15 +2,14 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-import os, asyncio
+import os
 from dotenv import load_dotenv
 
 from languages.languages import Language
 from discord_features.pagination import Pagination
 from discord_features.logging import discord_log
 from file_functions.hex import Hex
-from music.help_cog import help_cog
-from music.music_cog import music_cog
+from file_functions.json import ChannelJson
 
 import server.webserver
 
@@ -30,7 +29,27 @@ class Client(commands.Bot):
         except Exception as e:
             print(f"Error syncing commands: {e}")
 
-intents = discord.Intents.default()
+    async def on_member_join(interaction: discord.Interaction, member: discord.Member):
+        print(f"{member.display_name} join")
+        greet_channel_id = ChannelJson.load("greet")
+        greet_channel = await client.fetch_channel(greet_channel_id)
+
+        embed = discord.Embed(title=f"WELCOME{member.mention}")
+        embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+
+        await greet_channel.send(embed=embed)
+
+    async def on_member_remove(interaction: discord.Interaction, member: discord.Member):
+        print(f"{member.display_name} leave")
+        goodbye_channel_id = ChannelJson.load("goodbye")
+        goodbye_channel = await client.fetch_channel(goodbye_channel_id)
+
+        embed = discord.Embed(title=f"GOODBYE {member.mention}")
+        embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+
+        await goodbye_channel.send(embed=embed)
+
+intents = discord.Intents.all()
 intents.message_content = True
 client = Client(command_prefix="!", intents=intents)
 
@@ -97,11 +116,17 @@ async def warn(interaction: discord.Interaction, hex_string: str):
 
 @client.tree.command(name="set_welcome_channel", description="Set Channel to Welcome User", guild=GUILD_ID)
 async def set_welcome_channel(interaction: discord.Interaction, channel: discord.TextChannel):
-    pass
+    channel_type = "greet"
+    ChannelJson.write(channel_type=channel_type, channel_id=channel.id)
+
+    await interaction.response.send_message(f"```You set {channel} to greet channel```")
 
 @client.tree.command(name="set_goodbye_channel", description="Set Channel to Goodbye User", guild=GUILD_ID)
 async def set_goodbye_channel(interaction: discord.Interaction, channel: discord.TextChannel):
-    pass
+    channel_type = "goodbye"
+    ChannelJson.write(channel_type=channel_type, channel_id=channel.id)
+
+    await interaction.response.send_message(f"```You set {channel} to goodbye channel```")
 
 client.run(TOKEN)
 
