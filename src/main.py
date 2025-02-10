@@ -2,13 +2,15 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-import os
+import os, asyncio
 from dotenv import load_dotenv
 
 from languages.languages import Language
 from discord_features.pagination import Pagination
 from discord_features.logging import discord_log
 from file_functions.hex import Hex
+from music.help_cog import help_cog
+from music.music_cog import music_cog
 
 import server.webserver
 
@@ -16,8 +18,6 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 ID =  int(os.environ.get("GUILD_ID"))
 GUILD_ID = discord.Object(id=ID)
-
-discord_log()
 
 class Client(commands.Bot):
     async def on_ready(self):
@@ -34,11 +34,11 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = Client(command_prefix="!", intents=intents)
 
-lang_instance = Language()
+client.remove_command("help")
 
-@client.tree.command(name="hello", description="say hello", guild=GUILD_ID)
-async def say_hello(interaction: discord.Interaction, print: str):
-    await interaction.response.send_message(f"Hi there {print}")
+discord_log()
+
+lang_instance = Language()
 
 # Command: Search Language Code
 @client.tree.command(name="search_languages", description="Search for languages code", guild=GUILD_ID)
@@ -95,6 +95,14 @@ async def warn(interaction: discord.Interaction, hex_string: str):
     else:
         await interaction.response.send_message(file_name)
 
+@client.tree.command(name="set_welcome_channel", description="Set Channel to Welcome User", guild=GUILD_ID)
+async def set_welcome_channel(interaction: discord.Interaction, channel: discord.TextChannel):
+    pass
+
+@client.tree.command(name="set_goodbye_channel", description="Set Channel to Goodbye User", guild=GUILD_ID)
+async def set_goodbye_channel(interaction: discord.Interaction, channel: discord.TextChannel):
+    pass
+
 client.run(TOKEN)
 
-server.websever.keep_alive()
+server.webserver.keep_alive()
