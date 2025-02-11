@@ -17,7 +17,6 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 ID =  int(os.environ.get("GUILD_ID"))
 GUILD_ID = discord.Object(id=ID)
-
 class Client(commands.Bot):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
@@ -30,22 +29,37 @@ class Client(commands.Bot):
             print(f"Error syncing commands: {e}")
 
     async def on_member_join(interaction: discord.Interaction, member: discord.Member):
-        print(f"{member.display_name} join")
         greet_channel_id = ChannelJson.load("greet")
+        greet_image = ChannelJson.load("greet_image")
+        join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        if greet_channel_id == None:
+            return
+        
         greet_channel = await client.fetch_channel(greet_channel_id)
 
-        embed = discord.Embed(title=f"WELCOME{member.mention}")
+        embed = discord.Embed(title=f"WELCOME {member.display_name}", description=f"{member.mention}")
+        embed.add_field(name="Happy to see 😊", value="A smile is a welcomed sight that invites people in")
+        embed.set_image(url=greet_image)
         embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+        embed.set_footer(text=f"{member.guild.name} ⋅ {join_time}", icon_url=member.guild.icon.url if member.guild.icon else None)
 
         await greet_channel.send(embed=embed)
 
     async def on_member_remove(interaction: discord.Interaction, member: discord.Member):
-        print(f"{member.display_name} leave")
         goodbye_channel_id = ChannelJson.load("goodbye")
+        goodbye_image = ChannelJson.load("goodbye_image")
+        join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        if goodbye_channel_id == None:
+            return
         goodbye_channel = await client.fetch_channel(goodbye_channel_id)
 
-        embed = discord.Embed(title=f"GOODBYE {member.mention}")
+        embed = discord.Embed(title=f"GOODBYE {member.display_name}", description=f"{member.mention}")
+        embed.add_field(name="We hope not to see you again 🤬", value="Every new beginning comes from some other beginning’s end.")
+        embed.set_image(url=goodbye_image)
         embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+        embed.set_footer(text=f"{member.guild.name} ⋅ {join_time}" ,icon_url=member.guild.icon.url if member.guild.icon else None)
 
         await goodbye_channel.send(embed=embed)
 
@@ -117,16 +131,30 @@ async def warn(interaction: discord.Interaction, hex_string: str):
 @client.tree.command(name="set_welcome_channel", description="Set Channel to Welcome User", guild=GUILD_ID)
 async def set_welcome_channel(interaction: discord.Interaction, channel: discord.TextChannel):
     channel_type = "greet"
-    ChannelJson.write(channel_type=channel_type, channel_id=channel.id)
+    ChannelJson.write(key_type=channel_type, info=channel.id)
 
     await interaction.response.send_message(f"```You set {channel} to greet channel```")
+
+@client.tree.command(name="set_welcome_image", description="Set Image to Welcome User", guild=GUILD_ID)
+async def set_welcome_image(interaction: discord.Interaction, url: str):
+    key_type = "greet_image"
+    ChannelJson.write(key_type=key_type, info=url)
+
+    await interaction.response.send_message(f"```You set {url} to greet ```")
 
 @client.tree.command(name="set_goodbye_channel", description="Set Channel to Goodbye User", guild=GUILD_ID)
 async def set_goodbye_channel(interaction: discord.Interaction, channel: discord.TextChannel):
     channel_type = "goodbye"
-    ChannelJson.write(channel_type=channel_type, channel_id=channel.id)
+    ChannelJson.write(key_type=channel_type, info=channel.id)
 
     await interaction.response.send_message(f"```You set {channel} to goodbye channel```")
+
+@client.tree.command(name="set_goodbye_image", description="Set Image to Goodbye User", guild=GUILD_ID)
+async def set_goodbye_image(interaction: discord.Interaction, url: str):
+    key_type = "goodbye_image"
+    ChannelJson.write(key_type=key_type, info=url)
+
+    await interaction.response.send_message(f"```You set {url} to goodbye ```")
 
 client.run(TOKEN)
 
