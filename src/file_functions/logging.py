@@ -1,10 +1,8 @@
 import logging
 import logging.handlers
 import os
-from file_functions.make import check_dir_file
 
 def discord_log():
-    check_dir_file("discord.log")
     # Set up logging
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
