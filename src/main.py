@@ -38,7 +38,7 @@ class Client(commands.Bot):
         
         greet_channel = await client.fetch_channel(greet_channel_id)
 
-        embed = discord.Embed(title=f"WELCOME {member.display_name}", description=f"{member.mention}")
+        embed = discord.Embed(title=f"WELCOME {member.display_name}", description=f"{member.mention}", color=discord.Colour.greyple())
         embed.add_field(name="Happy to see 😊", value="A smile is a welcomed sight that invites people in")
         embed.set_image(url=greet_image)
         embed.set_author(name=member.display_name, icon_url=member.display_avatar)
@@ -55,7 +55,7 @@ class Client(commands.Bot):
             return
         goodbye_channel = await client.fetch_channel(goodbye_channel_id)
 
-        embed = discord.Embed(title=f"GOODBYE {member.display_name}", description=f"{member.mention}")
+        embed = discord.Embed(title=f"GOODBYE {member.display_name}", description=f"{member.mention}", color=discord.Colour.greyple())
         embed.add_field(name="We hope not to see you again 🤬", value="Every new beginning comes from some other beginning’s end.")
         embed.set_image(url=goodbye_image)
         embed.set_author(name=member.display_name, icon_url=member.display_avatar)
