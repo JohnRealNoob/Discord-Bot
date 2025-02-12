@@ -1,4 +1,4 @@
 .env
-__pycache__
-music
-data
+__pycache__/
+src/music/
+data/
