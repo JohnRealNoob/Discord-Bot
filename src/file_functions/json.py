@@ -1,6 +1,5 @@
 import json
 import os
-from make import check_dir_file
 class ChannelJson:
     name = "channel.json"
     dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data")
@@ -8,7 +7,6 @@ class ChannelJson:
 
     @classmethod
     def load(cls, key_type: str):
-        check_dir_file(cls.name)
         # Load JSON data safely
         try:
             with open(cls.filename, "r") as file:
@@ -25,7 +23,6 @@ class ChannelJson:
     
     @classmethod
     def write(cls, key_type: str, info: int):
-        check_dir_file(cls.name)
         # Load JSON data safely
         try:
             with open(cls.filename, "r") as file:
