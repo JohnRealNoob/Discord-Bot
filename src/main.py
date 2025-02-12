@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 
 from languages.languages import Language
 from discord_features.pagination import Pagination
-from discord_features.logging import discord_log
+from file_functions.logging import discord_log
 from file_functions.hex import Hex
 from file_functions.json import ChannelJson
+from file_functions.logging import discord_log
 
 import server.webserver
 
