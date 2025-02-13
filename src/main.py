@@ -5,12 +5,14 @@ from discord import app_commands
 import os
 from dotenv import load_dotenv
 
+import ai.chatgpt
 from languages.languages import Language
 from discord_features.pagination import Pagination
 from file_functions.logging import discord_log
 from file_functions.hex import Hex
 from file_functions.json import ChannelJson
 from file_functions.logging import discord_log
+import ai
 
 import server.webserver
 
@@ -18,6 +20,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 ID =  int(os.environ.get("GUILD_ID"))
 GUILD_ID = discord.Object(id=ID)
+gpt_ai = ai.chatgpt.Chatgpt(os.getenv("OPENAI_API_KEY"))
 class Client(commands.Bot):
     async def on_ready(self):
         print(f"Logged on as {self.user}")
@@ -156,6 +159,12 @@ async def set_goodbye_image(interaction: discord.Interaction, url: str):
     ChannelJson.write(key_type=key_type, info=url)
 
     await interaction.response.send_message(f"```You set {url} to goodbye ```")
+
+@client.tree.command(name="ask", description="ask bot power by chatgpt-4o", guild=GUILD_ID)
+async def ask_chatgpt(interaction: discord.Interaction, question: str):
+    response = ai.chatgpt.ai.reponse(question)
+
+    await interaction.response.send_message(response)
 
 client.run(TOKEN)
 
