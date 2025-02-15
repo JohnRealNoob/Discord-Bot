@@ -19,3 +19,6 @@ class Management(commands.Cog):
             print(f"Could not DM {member.name}. DMs might be disabled or the bot is blocked.")
         except discord.HTTPException as e:
             print(f"An error occurred while sending the DM to {member.name}: {e}")
+
+def setup(bot):
+    bot.add_cog(Management(bot))

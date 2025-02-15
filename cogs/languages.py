@@ -92,3 +92,6 @@ class Languages(commands.Cog):
             return emb, n
 
         await Pagination(interaction, get_page).navegate()
+
+def setup(bot):
+    bot.add_cog(Languages(bot))

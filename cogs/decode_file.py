@@ -56,3 +56,6 @@ class DecodeFile(commands.Cog):
             os.remove(file_name)
         else:
             await interaction.response.send_message(file_name)
+
+def setup(bot):
+    bot.add_cog(DecodeFile(bot))
