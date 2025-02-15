@@ -13,6 +13,9 @@ from file_functions.hex import Hex
 from file_functions.json import ChannelJson
 from file_functions.logging import discord_log
 
+from music.music_cog import music_cog
+from music.help_cog import help_cog
+
 import server.webserver
 
 load_dotenv()
@@ -21,8 +24,17 @@ ID =  int(os.environ.get("GUILD_ID"))
 GUILD_ID = discord.Object(id=ID)
 #gpt_ai = ai.chatbot.Chatgpt(os.getenv("OPENAI_API_KEY"))
 class Client(commands.Bot):
+
+    def __init__(self):
+        super().__init__(command_prefix="!", intents=discord.Intents.all())
+
     async def on_ready(self):
         print(f"Logged on as {self.user}")
+
+        try:
+            await client.load_extension("music.music_cog")
+        except Exception as e:
+            print(e)
 
         try:
             guild = discord.Object(id=ID)
@@ -30,6 +42,7 @@ class Client(commands.Bot):
             print(f"synced {len(synced)} commands to guild {guild.id}")
         except Exception as e:
             print(f"Error syncing commands: {e}")
+
 
     async def on_member_join(interaction: discord.Interaction, member: discord.Member):
         greet_channel_id = ChannelJson.load("greet")
@@ -66,9 +79,7 @@ class Client(commands.Bot):
 
         await goodbye_channel.send(embed=embed)
 
-intents = discord.Intents.all()
-intents.message_content = True
-client = Client(command_prefix="!", intents=intents)
+client = Client()
 
 client.remove_command("help")
 
@@ -166,5 +177,3 @@ async def set_goodbye_image(interaction: discord.Interaction, url: str):
     #await interaction.response.send_message(response)
 
 client.run(TOKEN)
-
-server.webserver.keep_alive()

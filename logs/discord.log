@@ -1,0 +1,555 @@
+[2025-02-09 21:33:51] [INFO    ] discord.client: logging in using static token
+[2025-02-09 21:33:52] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: caedef4d7f78caec7da9c9fc2ecfd509).
+[2025-02-09 21:34:04] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 34, in on_member_join
+    greet_channel = await client.fetch_channel(greet_channel_id)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 2598, in fetch_channel
+    data = await self.http.get_channel(channel_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\http.py", line 758, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In channel_id: Value "False" is not snowflake.
+[2025-02-09 21:41:11] [INFO    ] discord.client: logging in using static token
+[2025-02-09 21:41:12] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9f4fe45a4f0debfe4d38d4cd1ddcb4cb).
+[2025-02-09 21:42:11] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 34, in on_member_join
+    if not greet_channel:
+           ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'greet_channel' where it is not associated with a value
+[2025-02-09 21:42:43] [INFO    ] discord.client: logging in using static token
+[2025-02-09 21:42:43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 060621a275845496593bc24f1eea476b).
+[2025-02-09 21:42:48] [ERROR   ] discord.client: Ignoring exception in on_member_remove
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 51, in on_member_remove
+    embed.add_field(name="We hope not to see you again 🤬")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Embed.add_field() missing 1 required keyword-only argument: 'value'
+[2025-02-09 21:43:15] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 42, in on_member_join
+    await greet_channel.send(embed=embed)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\abc.py", line 1618, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\http.py", line 758, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
+In embeds.0.footer.icon_url: Not a well formed URL.
+[2025-02-09 21:49:07] [INFO    ] discord.client: logging in using static token
+[2025-02-09 21:49:08] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: fae6de820cb5b63f875146a81d7fdf68).
+[2025-02-09 21:49:12] [ERROR   ] discord.client: Ignoring exception in on_member_remove
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 51, in on_member_remove
+    embed.add_field(name="We hope not to see you again 🤬")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Embed.add_field() missing 1 required keyword-only argument: 'value'
+[2025-02-09 21:53:12] [INFO    ] discord.client: logging in using static token
+[2025-02-09 21:53:13] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 1218c9acacafbc2f2d197f44f5b295aa).
+[2025-02-09 21:53:28] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 39, in on_member_join
+    embed.set_author(name=member.display_name, icon_url=member.display_avatar, value="")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Embed.set_author() got an unexpected keyword argument 'value'
+[2025-02-09 21:54:41] [INFO    ] discord.client: logging in using static token
+[2025-02-09 21:54:41] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b500986950e90c281e45be3bd77f0f24).
+[2025-02-09 21:54:45] [ERROR   ] discord.client: Ignoring exception in on_member_remove
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 54, in on_member_remove
+    embed.set_footer(icon_url=discord.Guild.icon.url)
+                              ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'property' object has no attribute 'url'
+[2025-02-09 22:12:22] [INFO    ] discord.client: logging in using static token
+[2025-02-09 22:12:23] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 6b11c93e245930e875d8bdf1f016644c).
+[2025-02-09 22:12:38] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 40, in on_member_join
+    embed.set_footer(icon_url=(discord.Guild.icon).url)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'property' object has no attribute 'url'
+[2025-02-10 19:23:26] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:23:27] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: acc3cd2af41809b2c8bf7d741302ee7c).
+[2025-02-10 19:23:44] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'set_welcome_channel'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 125, in set_welcome_channel
+    ChannelJson.write(guild_id=interaction.guild.id, channel_type=channel_type, channel_id=channel.id)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\file_functions\json.py", line 33, in write
+    data[guild_id][channel_type] = channel_id
+    ~~~~^^^^^^^^^^
+KeyError: 1053969038751047700
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'set_welcome_channel' raised an exception: KeyError: 1053969038751047700
+[2025-02-10 19:24:35] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:24:36] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 5e8f3ad50d790b420fc547fec733e64b).
+[2025-02-10 19:24:47] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'set_welcome_channel'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 125, in set_welcome_channel
+    ChannelJson.write(guild_id=interaction.guild.id, channel_type=channel_type, channel_id=channel.id)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\file_functions\json.py", line 33, in write
+    data[guild_id][channel_type] = channel_id
+    ~~~~^^^^^^^^^^
+KeyError: 1053969038751047700
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'set_welcome_channel' raised an exception: KeyError: 1053969038751047700
+[2025-02-10 19:25:16] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:25:17] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 107b4fdf3d977d7287e49851b5b31495).
+[2025-02-10 19:25:23] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'set_welcome_channel'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 125, in set_welcome_channel
+    ChannelJson.write(guild_id=str(interaction.guild.id), channel_type=channel_type, channel_id=channel.id)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\file_functions\json.py", line 33, in write
+    data[guild_id][channel_type] = channel_id
+    ~~~~^^^^^^^^^^
+KeyError: '1053969038751047700'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'set_welcome_channel' raised an exception: KeyError: '1053969038751047700'
+[2025-02-10 19:27:18] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:27:19] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d8d414dfc5e49f47ec35ca8589ffbe75).
+[2025-02-10 19:27:59] [ERROR   ] discord.client: Ignoring exception in on_member_remove
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 53, in on_member_remove
+    embed.set_footer(icon_url=interaction.guild.icon.url)
+                              ^^^^^^^^^^^^^^^^^
+AttributeError: 'Client' object has no attribute 'guild'. Did you mean: 'guilds'?
+[2025-02-10 19:28:39] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:28:40] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 5c2a1c5341310d6075b046d2519cf271).
+[2025-02-10 19:28:49] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 40, in on_member_join
+    embed.set_footer(icon_url=interaction.guilds.icon.url)
+                              ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SequenceProxy' object has no attribute 'icon'
+[2025-02-10 19:29:32] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:29:32] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b5463818ed60f1c4ff394eddf6e6ed8d).
+[2025-02-10 19:29:41] [ERROR   ] discord.client: Ignoring exception in on_member_remove
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 53, in on_member_remove
+    embed.set_footer(icon_url=interaction.guild.icon.url)
+                              ^^^^^^^^^^^^^^^^^
+AttributeError: 'Client' object has no attribute 'guild'. Did you mean: 'guilds'?
+[2025-02-10 19:31:04] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:31:05] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d3d5a601a05e2d826c0e8263bf1a37c6).
+[2025-02-10 19:34:45] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:34:45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: fe43cb53a05a76e5c2ace741e050d824).
+[2025-02-10 19:37:59] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:38:00] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e8a2261e1502e0b3694155c81753c934).
+[2025-02-10 19:40:10] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session e8a2261e1502e0b3694155c81753c934.
+[2025-02-10 19:41:47] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:41:47] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9d3f3c6b887ec29848a50af09b9274fb).
+[2025-02-10 19:55:21] [INFO    ] discord.client: logging in using static token
+[2025-02-10 19:55:22] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8b4b86aa42aa0048a46f743391bbcc34).
+[2025-02-10 20:05:13] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'set_goodbye_image'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 155, in set_goodbye_image
+    ChannelJson.write(channel_type=key_type, info=url)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ChannelJson.write() got an unexpected keyword argument 'channel_type'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 872, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'set_goodbye_image' raised an exception: TypeError: ChannelJson.write() got an unexpected keyword argument 'channel_type'
+[2025-02-10 20:06:00] [INFO    ] discord.client: logging in using static token
+[2025-02-10 20:06:01] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d2a554a01fdb5b9237a2fc2c0d42cd52).
+[2025-02-10 20:06:56] [ERROR   ] discord.client: Ignoring exception in on_member_join
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 43, in on_member_join
+    embed.set_image(greet_image)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+TypeError: Embed.set_image() takes 1 positional argument but 2 were given
+[2025-02-10 20:09:05] [INFO    ] discord.client: logging in using static token
+[2025-02-10 20:09:05] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d24eeea37d76e580c33cb4fac07c5481).
+[2025-02-10 21:10:46] [INFO    ] discord.client: logging in using static token
+[2025-02-10 21:10:47] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 94dac373341a001183895f714353c9e2).
+[2025-02-12 23:32:05] [INFO    ] discord.client: logging in using static token
+[2025-02-12 23:32:06] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: c284941f2087e3f0c33d645364dbbc35).
+[2025-02-12 23:32:34] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'ask'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 165, in ask_chatgpt
+    response = ai.chatgpt.ai.reponse(question)
+               ^^^^^^^^^^^^^
+AttributeError: module 'ai.chatgpt' has no attribute 'ai'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'ask' raised an exception: AttributeError: module 'ai.chatgpt' has no attribute 'ai'
+[2025-02-12 23:33:28] [INFO    ] discord.client: logging in using static token
+[2025-02-12 23:33:28] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: ffce680a50a993cffa1ced44ca133660).
+[2025-02-12 23:33:37] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'ask'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 165, in ask_chatgpt
+    response = gpt_ai.response(question)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\ai\chatgpt.py", line 8, in response
+    completion = self.client.chat.completions.create(
+        model="gpt-4o",
+    ...<14 lines>...
+        ]
+    )
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_utils\_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\resources\chat\completions.py", line 863, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<40 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1290, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 967, in request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        cast_to=cast_to,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        retries_taken=retries_taken,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1056, in _request
+    return self._retry_request(
+           ~~~~~~~~~~~~~~~~~~~^
+        input_options,
+        ^^^^^^^^^^^^^^
+    ...<4 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1105, in _retry_request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1056, in _request
+    return self._retry_request(
+           ~~~~~~~~~~~~~~~~~~~^
+        input_options,
+        ^^^^^^^^^^^^^^
+    ...<4 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1105, in _retry_request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1071, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'ask' raised an exception: RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-02-12 23:37:02] [INFO    ] discord.client: logging in using static token
+[2025-02-12 23:37:02] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 826b43dd94454ff1beffcc768e15204b).
+[2025-02-12 23:37:20] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'ask'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 165, in ask_chatgpt
+    response = gpt_ai.response(question)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\ai\chatgpt.py", line 8, in response
+    completion = self.client.chat.completions.create(
+        model="gpt-4o-mini",
+    ...<14 lines>...
+        ]
+    )
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_utils\_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\resources\chat\completions.py", line 863, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<40 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1290, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 967, in request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        cast_to=cast_to,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        retries_taken=retries_taken,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1056, in _request
+    return self._retry_request(
+           ~~~~~~~~~~~~~~~~~~~^
+        input_options,
+        ^^^^^^^^^^^^^^
+    ...<4 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1105, in _retry_request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1056, in _request
+    return self._retry_request(
+           ~~~~~~~~~~~~~~~~~~~^
+        input_options,
+        ^^^^^^^^^^^^^^
+    ...<4 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1105, in _retry_request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1071, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'ask' raised an exception: RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-02-12 23:40:46] [INFO    ] discord.client: logging in using static token
+[2025-02-12 23:40:46] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d5c65b6a1e7f266301f3b2082bc86c04).
+[2025-02-12 23:41:50] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'ask'
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 858, in _do_call
+    return await self._callback(interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\main.py", line 165, in ask_chatgpt
+    response = gpt_ai.response(question)
+  File "C:\Users\nuttj\OneDrive\เอกสาร\Discord-Bot\src\ai\chatgpt.py", line 8, in response
+    completion = self.client.chat.completions.create(
+        model="gpt-3.5-turbo",
+    ...<14 lines>...
+        ]
+    )
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_utils\_utils.py", line 279, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\resources\chat\completions.py", line 863, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<40 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1290, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 967, in request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        cast_to=cast_to,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        retries_taken=retries_taken,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1056, in _request
+    return self._retry_request(
+           ~~~~~~~~~~~~~~~~~~~^
+        input_options,
+        ^^^^^^^^^^^^^^
+    ...<4 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1105, in _retry_request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1056, in _request
+    return self._retry_request(
+           ~~~~~~~~~~~~~~~~~~~^
+        input_options,
+        ^^^^^^^^^^^^^^
+    ...<4 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1105, in _retry_request
+    return self._request(
+           ~~~~~~~~~~~~~^
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        stream_cls=stream_cls,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\openai\_base_client.py", line 1071, in _request
+    raise self._make_status_error_from_response(err.response) from None
+openai.RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nuttj\AppData\Local\Programs\Python\Python313\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'ask' raised an exception: RateLimitError: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-02-15 13:03:20] [INFO    ] discord.client: logging in using static token
+[2025-02-15 13:03:20] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b63cd8a7297ecfeb0105aa09cdf85353).
+[2025-02-15 14:55:05] [INFO    ] discord.client: logging in using static token
+[2025-02-15 14:55:06] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: cd50c99bf9004954f3912b70cc3c2808).
