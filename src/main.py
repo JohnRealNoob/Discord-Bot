@@ -30,7 +30,7 @@ class Client(commands.Bot):
 
     async def on_ready(self):
         print(f"Logged on as {self.user}")
-
+        
         try:
             await client.load_extension("music.music_cog")
         except Exception as e:

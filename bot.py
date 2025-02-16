@@ -10,34 +10,43 @@ class Client(commands.Bot):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
 
     async def on_ready(self):
-        print(f"Commands loaded: {len(self.tree.get_commands())}")
-        print(f"Logged in as {self.user}")
-        try:
-            synced = await self.tree.sync(guild=discord.Object(id=GUILD_ID))
-            await asyncio.sleep(2)  # Wait to avoid rate limits
-            await self.tree.sync()  # Sync globally (for production)
+        print(f"Logged on as {self.user}")
 
-            print(f"Synced {len(synced)} commands for development.")
+    async def setup_hook(self):
+
+        print("Loading cogs...")
+        await self.load_cogs()
+
+        # Sync commands once when bot starts
+        
+        try:
+            synced = await self.tree.sync()
+            print(f"Synced {len(synced)} commands at startup.")
         except Exception as e:
-            print(f"Sync Error: {e}")
+            print(f"Sync error: {e}")
 
     async def load_cogs(self):
-        cogs = []
-        for filename in os.listdir("./cogs"):
-            if filename.endswith(".py") and filename != "__init__.py":
-                cogs.append(f"cogs.{filename[:-3]}")
+        cogs_dir = "./cogs"
+        if not os.path.exists(cogs_dir) or not os.path.isdir(cogs_dir):
+            print("No cogs directory found.")
+            return  
+
+        cogs = [f"cogs.{filename[:-3]}" for filename in os.listdir(cogs_dir) if filename.endswith(".py") and filename != "__init__.py"]
+        
         for cog in cogs:
-            module = import_module(cog)
-            if module.__name__ in self.extensions:
-                await self.reload_extension(module.__name__)
-            else:
-                await self.load_extension(module.__name__)
+            try:
+                if cog in self.extensions:
+                    await self.reload_extension(cog)
+                else:
+                    await self.load_extension(cog)
+                print(f"Loaded cog: {cog}")  
+            except Exception as e:
+                print(f"Error loading {cog}: {e}")
 
 client = Client()
-    
+
 async def main():
     async with client:
-        await client.load_cogs()
         await client.start(TOKEN)
 
-asyncio.run(main())
+asyncio.run(main())  # Runs the bot asynchronously

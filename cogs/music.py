@@ -72,10 +72,10 @@ class music_cog(commands.Cog):
             self.is_playing = False
 
     @app_commands.command(name="play", description="Plays a selected song from youtube")
-    async def play(self, interaction: discord.Interaction, member: discord.Member, music: str):
+    async def play(self, interaction: discord.Interaction, music: str):
         query = " ".join(music)
         try:
-            voice_channel = member.voice.channel
+            voice_channel = interaction.user.voice.channel
         except:
             await interaction.response.send_message("```You need to connect to a voice channel first!```")
             return
