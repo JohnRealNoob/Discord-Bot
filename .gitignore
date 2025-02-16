@@ -1,5 +1,6 @@
 .env
 __pycache__/
-src/music/
 data/
+logs/
+src/music/
 src/ai/

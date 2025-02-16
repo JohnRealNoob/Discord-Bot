@@ -4,27 +4,33 @@ import asyncio
 import os
 from config.config import TOKEN, GUILD_ID
 
-intents = discord.Intents.all()  # Enable all intents if needed
-bot = commands.Bot(command_prefix="!", intents=intents)
+class Client(commands.Bot):
+    def __init__(self):
+        super().__init__(command_prefix="!", intents=discord.Intents.all())
 
-@bot.event
-async def on_ready():
-    print(f"✅ Logged in as {bot.user}")
-    try:
-        synced = await bot.tree.sync(guild=discord.Object(id=GUILD_ID))  # Fast sync
-        print(f"✅ Synced {len(synced)} commands for development.")
-    except Exception as e:
-        print(f"❌ Sync Error: {e}")
+    async def on_ready(self):
+        print(f"Logged in as {self.user}")
+        try:
+            synced = await self.tree.sync(guild=discord.Object(id=GUILD_ID))  # Fast sync
+            print(f"Synced {len(synced)} commands for development.")
+        except Exception as e:
+            print(f"Sync Error: {e}")
 
-async def load_cogs():
-    for filename in os.listdir("./cogs"):
-        if filename.endswith(".py"):
-            await bot.load_extension(f"cogs.{filename[:-3]}")
-            print(f"🔹 Loaded cog: {filename}")
+    async def load_cogs(self):
+        for filename in os.listdir("./cogs"):
+            if filename.endswith(".py"):
+                extension = f"cogs.{filename[:-3]}"
+                try:
+                    await self.load_extension(extension)  # Changed from client to self
+                    print(f"Loaded cog: {extension}")
+                except Exception as e:
+                    print(f"Failed to load {extension}: {e}")
+
+client = Client()
 
 async def main():
-    async with bot:
-        await load_cogs()
-        await bot.start(TOKEN)
+    async with client:
+        await client.load_cogs()
+        await client.start(TOKEN)
 
 asyncio.run(main())

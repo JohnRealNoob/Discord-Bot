@@ -68,5 +68,5 @@ class JoinLeave(commands.Cog):
 
         await interaction.response.send_message(f"```You set {url} to goodbye ```")
 
-def setup(bot):
+async def setup(bot):
     bot.add_cog(JoinLeave(bot))

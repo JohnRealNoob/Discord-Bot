@@ -93,5 +93,5 @@ class Languages(commands.Cog):
 
         await Pagination(interaction, get_page).navegate()
 
-def setup(bot):
+async def setup(bot):
     bot.add_cog(Languages(bot))

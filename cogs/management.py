@@ -20,5 +20,5 @@ class Management(commands.Cog):
         except discord.HTTPException as e:
             print(f"An error occurred while sending the DM to {member.name}: {e}")
 
-def setup(bot):
+async def setup(bot):
     bot.add_cog(Management(bot))
