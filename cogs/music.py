@@ -73,7 +73,6 @@ class music_cog(commands.Cog):
 
     @app_commands.command(name="play", description="Plays a selected song from youtube")
     async def play(self, interaction: discord.Interaction, music: str):
-        query = " ".join(music)
         try:
             voice_channel = interaction.user.voice.channel
         except:
@@ -82,7 +81,7 @@ class music_cog(commands.Cog):
         if self.is_paused:
             self.vc.resume()
         else:
-            song = self.search_yt(query)
+            song = self.search_yt(music)
             if type(song) == type(True):
                 await interaction.response.send_message("```Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.```")
             else:
