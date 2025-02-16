@@ -40,6 +40,43 @@ class JoinLeave(commands.Cog):
         with open(self.filename, "w") as file:
             json.dump(data, file, indent=4)
 
+    @commands.Cog.listener()
+    async def on_member_join(self, interaction: discord.Interaction, member: discord.Member):
+        greet_channel_id = self.load("greet")
+        greet_image = self.load("greet_image")
+        join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        if greet_channel_id == None:
+            return
+        
+        greet_channel = await discord.Client.fetch_channel(greet_channel_id)
+
+        embed = discord.Embed(title=f"WELCOME {member.display_name}", description=f"{member.mention}", color=discord.Colour.greyple())
+        embed.add_field(name="Happy to see 😊", value="A smile is a welcomed sight that invites people in")
+        embed.set_image(url=greet_image)
+        embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+        embed.set_footer(text=f"{member.guild.name} ⋅ {join_time}", icon_url=member.guild.icon.url if member.guild.icon else None)
+
+        await greet_channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, interaction: discord.Interaction, member: discord.Member):
+        goodbye_channel_id = self.load("goodbye")
+        goodbye_image = self.load("goodbye_image")
+        join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
+
+        if goodbye_channel_id == None:
+            return
+        goodbye_channel = await discord.Client.fetch_channel(goodbye_channel_id)
+
+        embed = discord.Embed(title=f"GOODBYE {member.display_name}", description=f"{member.mention}", color=discord.Colour.greyple())
+        embed.add_field(name="We hope not to see you again 🤬", value="Every new beginning comes from some other beginning’s end.")
+        embed.set_image(url=goodbye_image)
+        embed.set_author(name=member.display_name, icon_url=member.display_avatar)
+        embed.set_footer(text=f"{member.guild.name} ⋅ {join_time}" ,icon_url=member.guild.icon.url if member.guild.icon else None)
+
+        await goodbye_channel.send(embed=embed)
+
     @app_commands.command(name="set_welcome_channel", description="Set Channel to Welcome User")
     async def set_welcome_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         channel_type = "greet"

@@ -68,13 +68,13 @@ class Languages(commands.Cog):
     # Command: Search Language Code
     @app_commands.command(name="search_languages", description="Search for languages code")
     async def search_lang(self, interaction: discord.Interaction, lang: str):
-        lang_code = self.search_language_code(lang)
+        lang_code = await self.search_language_code(lang)
         await interaction.response.send_message(lang_code)
 
     # Command: Translate Languages
     @app_commands.command(name="translate", description="translate to any languages")
     async def translate(self, interaction: discord.Interaction, lang_code: str, *, text: str):
-        translated = self.translate_text(lang_code, text)
+        translated = await self.translate_text(lang_code, text)
         await interaction.response.send_message(translated)
 
     # Command: List All Available Language

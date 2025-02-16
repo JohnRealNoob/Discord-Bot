@@ -1,6 +1,6 @@
 from deep_translator import GoogleTranslator
 import Levenshtein
-from languages.lang_list import LANGUAGES
+from data.lang_list import LANGUAGES
 
 class Language:
     def __init__(self):
