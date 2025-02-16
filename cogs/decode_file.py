@@ -1,11 +1,9 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-
 import binascii
 import magic 
 import mimetypes
-
 import os
 
 class DecodeFile(commands.Cog):
@@ -13,7 +11,6 @@ class DecodeFile(commands.Cog):
         self.bot = bot
 
     def make_from_hex(self, hex_string):
-
         binary_data = binascii.unhexlify(hex_string.replace(" ", ""))
 
         try:
@@ -48,22 +45,21 @@ class DecodeFile(commands.Cog):
 
     @app_commands.command(name="make_file_hex", description="Make file from base 16")
     async def makefilehex(self, interaction: discord.Interaction, hex_string: str):
-        # Debugging: Check if interaction is valid
-        if not interaction.response:
-            print("Interaction response is None!")
-            await interaction.response.send_message("Error: Interaction response is None.")
-            return
+        try:
+            success, file_name = self.make_from_hex(hex_string)
 
-        success, file_name = self.make_from_hex(hex_string)
+            if success:
+                print(f"Sending file: {file_name}")
+                await interaction.response.send_message(file=discord.File(file_name))
+                os.remove(file_name)
+                print(f"File {file_name} removed after sending.")
+            else:
+                print(f"Error: {file_name}")
+                await interaction.response.send_message(file_name)
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            await interaction.response.send_message("An error occurred while processing your request.")
 
-        if success:
-            print(f"Sending file: {file_name}")
-            await interaction.response.send_message(file=discord.File(file_name))
-            os.remove(file_name)
-            print(f"File {file_name} removed after sending.")
-        else:
-            print(f"Error: {file_name}")
-            await interaction.response.send_message(file_name)
-
+# Don't use `await` here
 async def setup(bot):
-    bot.add_cog(DecodeFile(bot))
+    await bot.add_cog(DecodeFile(bot))

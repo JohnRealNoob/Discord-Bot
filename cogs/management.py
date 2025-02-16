@@ -21,4 +21,4 @@ class Management(commands.Cog):
             print(f"An error occurred while sending the DM to {member.name}: {e}")
 
 async def setup(bot):
-    bot.add_cog(Management(bot))
+    await bot.add_cog(Management(bot))

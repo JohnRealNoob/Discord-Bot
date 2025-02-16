@@ -10,11 +10,11 @@ class Client(commands.Bot):
 
     async def on_ready(self):
         print(f"Logged in as {self.user}")
-        try:
-            synced = await self.tree.sync(guild=discord.Object(id=GUILD_ID))  # Fast sync
-            print(f"Synced {len(synced)} commands for development.")
-        except Exception as e:
-            print(f"Sync Error: {e}")
+        #try:
+            #synced = await self.tree.sync(guild=discord.Object(id=GUILD_ID))  # Fast sync
+            #print(f"Synced {len(synced)} commands for development.")
+        #except Exception as e:
+            #print(f"Sync Error: {e}")
 
     async def load_cogs(self):
         for filename in os.listdir("./cogs"):
@@ -28,7 +28,13 @@ class Client(commands.Bot):
 
 client = Client()
 
+@client.tree.command(name="sync", description="owner only", guild=discord.Object(id=GUILD_ID))
+async def sync(interaction: discord.Interaction):
+    await client.tree.sync(guild=discord.Object(id=GUILD_ID))
+    print('Command tree synced.')
+    
 async def main():
+
     async with client:
         await client.load_cogs()
         await client.start(TOKEN)
