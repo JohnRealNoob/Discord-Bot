@@ -51,7 +51,7 @@ class Management(commands.Cog):
             except Exception as e:
                 await interaction.response.send_message(f"Error reloading `{cog}`: {e}", ephemeral=True)
 
-    @app_commands.command(name="load_cog", description="load specific cog")
+    @app_commands.command(name="load", description="load specific cog")
     async def load_cog(self, interaction: discord.Interaction, cog_name: str):
         if not await self.is_owner(interaction):
             await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)

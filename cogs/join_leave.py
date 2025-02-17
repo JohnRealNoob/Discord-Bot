@@ -41,7 +41,7 @@ class JoinLeave(commands.Cog):
             json.dump(data, file, indent=4)
 
     @commands.Cog.listener()
-    async def on_member_join(self, interaction: discord.Interaction, member: discord.Member):
+    async def on_member_join(self, member: discord.Member):
         greet_channel_id = self.load("greet")
         greet_image = self.load("greet_image")
         join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -49,7 +49,7 @@ class JoinLeave(commands.Cog):
         if greet_channel_id == None:
             return
         
-        greet_channel = await discord.Client.fetch_channel(greet_channel_id)
+        greet_channel = await self.bot.fetch_channel(greet_channel_id)
 
         embed = discord.Embed(title=f"WELCOME {member.display_name}", description=f"{member.mention}", color=discord.Colour.greyple())
         embed.add_field(name="Happy to see 😊", value="A smile is a welcomed sight that invites people in")
@@ -60,14 +60,14 @@ class JoinLeave(commands.Cog):
         await greet_channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_member_remove(self, interaction: discord.Interaction, member: discord.Member):
+    async def on_member_remove(self, member: discord.Member):
         goodbye_channel_id = self.load("goodbye")
         goodbye_image = self.load("goodbye_image")
         join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
 
         if goodbye_channel_id == None:
             return
-        goodbye_channel = await discord.Client.fetch_channel(goodbye_channel_id)
+        goodbye_channel = await self.bot.fetch_channel(goodbye_channel_id)
 
         embed = discord.Embed(title=f"GOODBYE {member.display_name}", description=f"{member.mention}", color=discord.Colour.greyple())
         embed.add_field(name="We hope not to see you again 🤬", value="Every new beginning comes from some other beginning’s end.")
