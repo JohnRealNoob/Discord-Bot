@@ -2,9 +2,8 @@ import discord
 from discord.ext import commands
 import asyncio
 import os
-from importlib import import_module
+from utils.logging import log
 from config.config import TOKEN, GUILD_ID
-
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
@@ -47,6 +46,7 @@ client = Client()
 
 async def main():
     async with client:
+        log()
         await client.start(TOKEN)
 
 asyncio.run(main())  # Runs the bot asynchronously

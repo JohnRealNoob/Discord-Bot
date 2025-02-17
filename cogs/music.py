@@ -1,152 +1,93 @@
 import discord
-from discord import app_commands
 from discord.ext import commands
-from youtubesearchpython import VideosSearch
-from yt_dlp import YoutubeDL
+from discord import app_commands
+import yt_dlp
 import asyncio
+import logging
 
-class music_cog(commands.Cog):
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+
+class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
-        #all the music related stuff
-        self.is_playing = False
-        self.is_paused = False
+        self.voice_clients = {}
+        self.queue = {}
 
-        # 2d array containing [song, channel]
-        self.music_queue = []
-        self.YDL_OPTIONS = {'format': 'bestaudio/best'}
-        self.FFMPEG_OPTIONS = {'options': '-vn'}
-
-        self.vc = None
-        self.ytdl = YoutubeDL(self.YDL_OPTIONS)
-
-     #searching the item on youtube
-    def search_yt(self, item):
-        if item.startswith("https://"):
-            title = self.ytdl.extract_info(item, download=False)["title"]
-            return{'source':item, 'title':title}
-        search = VideosSearch(item, limit=1)
-        return{'source':search.result()["result"][0]["link"], 'title':search.result()["result"][0]["title"]}
-
-    async def play_next(self):
-        if len(self.music_queue) > 0:
-            self.is_playing = True
-
-            #get the first url
-            m_url = self.music_queue[0][0]['source']
-
-            #remove the first element as you are currently playing it
-            self.music_queue.pop(0)
-            loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(m_url, download=False))
-            song = data['url']
-            self.vc.play(discord.FFmpegPCMAudio(song, executable= "ffmpeg.exe", **self.FFMPEG_OPTIONS), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(), self.bot.loop))
-        else:
-            self.is_playing = False
-
-    # infinite loop checking 
-    async def play_music(self, interaction: discord.Interaction):
-        if len(self.music_queue) > 0:
-            self.is_playing = True
-
-            m_url = self.music_queue[0][0]['source']
-            #try to connect to voice channel if you are not already connected
-            if self.vc == None or not self.vc.is_connected():
-                self.vc = await self.music_queue[0][1].connect()
-
-                #in case we fail to connect
-                if self.vc == None:
-                    await interaction.response.send_message("```Could not connect to the voice channel```")
-                    return
-            else:
-                await self.vc.move_to(self.music_queue[0][1])
-            #remove the first element as you are currently playing it
-            self.music_queue.pop(0)
-            loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(m_url, download=False))
-            song = data['url']
-            self.vc.play(discord.FFmpegPCMAudio(song, executable= "ffmpeg.exe", **self.FFMPEG_OPTIONS), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(), self.bot.loop))
-
-        else:
-            self.is_playing = False
-
-    @app_commands.command(name="play", description="Plays a selected song from youtube")
-    async def play(self, interaction: discord.Interaction, music: str):
+    def search_yt(self, query):
+        ydl_opts = {
+            "format": "bestaudio/best",
+            "noplaylist": True
+        }
         try:
-            voice_channel = interaction.user.voice.channel
-        except:
-            await interaction.response.send_message("```You need to connect to a voice channel first!```")
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(f"ytsearch:{query}", download=False)["entries"][0]
+                logging.debug(f"Found song: {info['title']} - {info['url']}")
+                return {"title": info["title"], "url": info["url"]}
+        except Exception as e:
+            logging.error(f"Error searching for YouTube video: {e}")
+            return None
+
+    async def play_next(self, ctx):
+        logging.debug("Playing next song")
+        if ctx.guild.id in self.queue and self.queue[ctx.guild.id]:
+            song = self.queue[ctx.guild.id].pop(0)
+            logging.debug(f"Playing song: {song['title']}")
+            source = discord.FFmpegPCMAudio(song["url"], executable="ffmpeg", before_options="-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5")
+            ctx.voice_client.play(source, after=lambda _: asyncio.run_coroutine_threadsafe(self.play_next(ctx), self.bot.loop))
+
+    @app_commands.command(name="play", description="Plays a song from YouTube")
+    async def play(self, interaction: discord.Interaction, query: str):
+        await interaction.response.defer()
+
+        if not interaction.user.voice or not interaction.user.voice.channel:
+            await interaction.followup.send("You need to be in a voice channel!", ephemeral=True)
             return
-        if self.is_paused:
-            self.vc.resume()
+
+        vc = interaction.guild.voice_client
+        if not vc:
+            logging.debug("Connecting to voice channel...")
+            vc = await interaction.user.voice.channel.connect()
+            self.voice_clients[interaction.guild.id] = vc
         else:
-            song = self.search_yt(music)
-            if type(song) == type(True):
-                await interaction.response.send_message("```Could not download the song. Incorrect format try another keyword. This could be due to playlist or a livestream format.```")
-            else:
-                if self.is_playing:
-                    await interaction.response.send_message(f"**#{len(self.music_queue)+2} -'{song['title']}'** added to the queue")  
-                else:
-                    await interaction.response.send_message(f"**'{song['title']}'** added to the queue")  
-                self.music_queue.append([song, voice_channel])
-                if self.is_playing == False:
-                    await self.play_music(interaction)
+            logging.debug("Already connected to a voice channel.")
 
-    @app_commands.command(name="pause", description="Pauses the current song being played")
-    async def pause(self, interaction: discord.Interaction):
-        if self.is_playing:
-            self.is_playing = False
-            self.is_paused = True
-            self.vc.pause()
-        elif self.is_paused:
-            self.is_paused = False
-            self.is_playing = True
-            self.vc.resume()
+        song = self.search_yt(query)
+        if song is None:
+            await interaction.followup.send("Could not find the song.", ephemeral=True)
+            return
 
-    @app_commands.command(name = "resume", description="Resumes playing with the discord bot")
-    async def resume(self, interaction: discord.Interaction):
-        if self.is_paused:
-            self.is_paused = False
-            self.is_playing = True
-            self.vc.resume()
+        if interaction.guild.id not in self.queue:
+            self.queue[interaction.guild.id] = []
 
-    @app_commands.command(name="skip", description="Skips the current song being played")
+        self.queue[interaction.guild.id].append(song)
+
+        if not vc.is_playing():
+            logging.debug("Starting to play the first song in the queue.")
+            await self.play_next(interaction)
+
+        await interaction.followup.send(f"Added **{song['title']}** to the queue!")
+
+    @app_commands.command(name="skip", description="Skips the current song")
     async def skip(self, interaction: discord.Interaction):
-        if self.vc != None and self.vc:
-            self.vc.stop()
-            #try to play next in the queue if it exists
-            await self.play_music(interaction)
-
-
-    @app_commands.command(name="queue", description="Displays the current songs in queue")
-    async def queue(self, interaction: discord.Interaction):
-        retval = ""
-        for i in range(0, len(self.music_queue)):
-            retval += f"#{i+1} -" + self.music_queue[i][0]['title'] + "\n"
-
-        if retval != "":
-            await interaction.response.send_message(f"```queue:\n{retval}```")
+        vc = interaction.guild.voice_client
+        if vc and vc.is_playing():
+            logging.debug("Skipping the song.")
+            vc.stop()
+            await interaction.response.send_message("Skipped the song!", ephemeral=True)
         else:
-            await interaction.response.send_message("```No music in queue```")
+            await interaction.response.send_message("No song is playing.", ephemeral=True)
 
-    @app_commands.command(name="clear", description="Stops the music and clears the queue")
-    async def clear(self, interaction: discord.Interaction):
-        if self.vc != None and self.is_playing:
-            self.vc.stop()
-        self.music_queue = []
-        await interaction.response.send_message("```Music queue cleared```")
-
-    @app_commands.command(name="stop", description="Kick the bot from VC")
-    async def dc(self, interaction: discord.Interaction):
-        self.is_playing = False
-        self.is_paused = False
-        await self.vc.disconnect()
-    
-    @app_commands.command(name="remove", description="Removes last song added to queue")
-    async def re(self, interaction: discord.Interaction):
-        self.music_queue.pop()
-        await interaction.response.send_message("```last song removed```")
+    @app_commands.command(name="stop", description="Stops playing music and disconnects")
+    async def stop(self, interaction: discord.Interaction):
+        vc = interaction.guild.voice_client
+        if vc:
+            logging.debug("Disconnecting from the voice channel.")
+            await vc.disconnect()
+            self.queue.pop(interaction.guild.id, None)
+            await interaction.response.send_message("Disconnected from voice channel.")
+        else:
+            await interaction.response.send_message("I'm not connected to any voice channel.", ephemeral=True)
 
 async def setup(bot):
-    await bot.add_cog(music_cog(bot))
+    await bot.add_cog(Music(bot))

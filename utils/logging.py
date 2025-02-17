@@ -9,7 +9,7 @@ def log():
     logging.getLogger('discord.http').setLevel(logging.INFO)
 
     handler = logging.handlers.RotatingFileHandler(
-        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "discord.log"),
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs", "discord.log"),
         encoding='utf-8',
         maxBytes=32 * 1024 * 1024,  # 32 MiB
         backupCount=5,  # Rotate through 5 files
