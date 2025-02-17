@@ -3,4 +3,4 @@ __pycache__/
 data/
 logs/
 test/
-discord.logs
+discord.log
