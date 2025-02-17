@@ -1,9 +1,16 @@
+import discord
+from discord.ext import commands
+from discord import app_commands
+
 from deep_translator import GoogleTranslator
 import Levenshtein
-from languages.lang_list import LANGUAGES
+from data.lang_list import LANGUAGES
 
-class Language:
-    def __init__(self):
+from extensions.pagination import Pagination
+
+class Languages(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
         self.languages = LANGUAGES
 
     async def translate_text(self, lang_code, text) -> str:      
@@ -57,3 +64,34 @@ class Language:
         page_content = "\n".join(languages_list[start:end])
         
         return page_content, total_pages
+
+    # Command: Search Language Code
+    @app_commands.command(name="search_languages", description="Search for languages code")
+    async def search_lang(self, interaction: discord.Interaction, lang: str):
+        lang_code = await self.search_language_code(lang)
+        await interaction.response.send_message(lang_code)
+
+    # Command: Translate Languages
+    @app_commands.command(name="translate", description="translate to any languages")
+    async def translate(self, interaction: discord.Interaction, lang_code: str, *, text: str):
+        translated = await self.translate_text(lang_code, text)
+        await interaction.response.send_message(translated)
+
+    # Command: List All Available Language
+    @app_commands.command(name="show_languages", description="translate to any languages")
+    async def show_lang(self, interaction: discord.Interaction):
+        async def get_page(page: int):
+            L = 10 # Element per page
+            emb = discord.Embed(title="Available Languages", description="", color=discord.Color.dark_gray())
+            offset = (page-1) * L
+            for language in dict(list(self.languages.items())[offset:offset+L]).items():
+                emb.description += f"{language[1].capitalize()} (`{language[0]}`)\n"
+            emb.set_author(name=f"Requested by {interaction.user}")
+            n = Pagination.compute_total_pages(len(self.languages), L)
+            emb.set_footer(text=f"Page {page} from {n}")
+            return emb, n
+
+        await Pagination(interaction, get_page).navegate()
+
+async def setup(bot):
+    await bot.add_cog(Languages(bot))

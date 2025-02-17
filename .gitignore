@@ -1,4 +1,6 @@
 .env
 __pycache__/
-src/music/
 data/
+logs/
+test/
+discord.logs
