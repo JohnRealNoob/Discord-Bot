@@ -9,9 +9,8 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.queues = {}
+        self.song_cache = {}
         self.voice_clients = {}
-        self.song_info_cache = {}
-        self.voice_client_timeout_tasks = {}
         self.timeout_duration = 60
         self.youtube_base_url = 'https://www.youtube.com/'
         self.youtube_results_url = self.youtube_base_url + 'results?'
@@ -20,28 +19,37 @@ class Music(commands.Cog):
         self.ytdl = yt_dlp.YoutubeDL(self.yt_dl_options)
         self.ffmpeg_options = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn -filter:a "volume=0.25"'}
 
-    async def reset_inactivity_timer(self, guild_id: int):
-        #Reset the inactivity timeout timer.
-        if guild_id in self.voice_client_timeout_tasks:
-            self.voice_client_timeout_tasks[guild_id].cancel()
+    async def search_yt(self, music: str):
+        query_string = urllib.parse.urlencode({"search_query": music})
+        content = urllib.request.urlopen(self.youtube_results_url + query_string)
+        search_results = re.findall(r'/watch\?v=(.{11})', content.read().decode())
 
-        task = asyncio.create_task(self.check_inactivity_and_disconnect(guild_id))
-        self.voice_client_timeout_tasks[guild_id] = task
+        if not search_results:
+            return None
 
-    async def check_inactivity_and_disconnect(self, guild_id: int):
-        #Check for inactivity and disconnect the bot after the specified timeout.
-        await asyncio.sleep(self.timeout_duration)
+        music = self.youtube_watch_url + search_results[0]  # Convert search result to URL
 
-        voice_client = self.voice_clients.get(guild_id)
+        return music
 
-        if voice_client and not voice_client.channel.members:
-            await voice_client.disconnect()  # Disconnect bot if no users in the voice channel
-            del self.voice_client_timeout_tasks[guild_id]  # Remove the task after disconnect
-
-    async def play(self, interaction: discord.Interaction, music: str):
+    async def play(self, interaction: discord.Interaction, url: str):
         # Play audio
-        player = discord.FFmpegOpusAudio(music, **self.ffmpeg_options)
-        interaction.guild.voice_client.play(player, after=lambda e: self.bot.loop.create_task(self.play_next(interaction)))
+        guild_id = interaction.guild_id
+
+        player = discord.FFmpegOpusAudio(url, **self.ffmpeg_options)
+
+        channel = interaction.user.voice.channel
+        vc = self.voice_clients.get(interaction.guild.id)
+
+        if vc is None or not vc.is_connected():
+            try:
+                vc = await channel.connect()
+                self.voice_clients[interaction.guild.id] = vc
+            except Exception as e:
+                print(f"Voice connection error: {e}")
+                await interaction.followup.send("Failed to connect to the voice channel.", ephemeral=True)
+                return
+
+        vc.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(interaction), self.bot.loop))
 
     async def play_next(self, interaction: discord.Interaction):
         guild_id = interaction.guild_id
@@ -54,18 +62,16 @@ class Music(commands.Cog):
                 await voice_client.disconnect()  # Disconnect the bot
             return  # No more songs, do nothing
 
-        title, link = self.queues[guild_id].pop(0)  # Get next song
+        # Get next song
+        link = self.queues[guild_id].pop(0) 
 
         # Ensure bot is still connected to voice
         voice_client = self.voice_clients.get(guild_id)
         if not voice_client or not voice_client.is_connected():
             return  # Bot is not in voice, stop processing
 
-        # Reset timeout timer
-        await self.reset_inactivity_timer(guild_id)
-
         # Call play function with the new song
-        await self.play(interaction=interaction, music=link)
+        await self.play(interaction=interaction, url=link)
 
     @app_commands.command(name="play", description="play music")
     async def play_music(self, interaction: discord.Interaction, music: str):
@@ -81,7 +87,7 @@ class Music(commands.Cog):
         if not vc:
             try:
                 vc = await interaction.user.voice.channel.connect()
-                self.voice_clients[interaction.guild.id] = vc
+                self.voice_clients[interaction.guild_id] = vc
             except Exception as e:
                 print(f"Voice connection error: {e}")
                 await interaction.followup.send("Failed to connect to the voice channel.", ephemeral=True)
@@ -92,50 +98,44 @@ class Music(commands.Cog):
 
         # Search for YouTube video if not a direct link
         if "youtube.com" not in music and "youtu.be" not in music:
-            query_string = urllib.parse.urlencode({"search_query": music})
-            content = urllib.request.urlopen(self.youtube_results_url + query_string)
-            search_results = re.findall(r'/watch\?v=(.{11})', content.read().decode())
-
-            if not search_results:
+            music = await self.search_yt(music)
+            if not music:
                 await interaction.followup.send("No YouTube results found.", ephemeral=True)
                 return
 
-            music = self.youtube_watch_url + search_results[0]  # Convert search result to URL
-
-        # Check cache or fetch video info
-        if music not in self.song_info_cache:
-            loop = asyncio.get_event_loop()
-            try:
-                data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(music, download=False))
-                song_url = data['url']
-                video_title = data.get("title", "Unknown title")
-                
-                # Cache the song info
-                self.song_info_cache[music] = (video_title, song_url)
-            except Exception as e:
-                print(f"Error fetching YouTube video: {e}")
-                await interaction.followup.send("Failed to retrieve the song.", ephemeral=True)
-                return
-        else:
-            video_title, song_url = self.song_info_cache[music]
+        loop = asyncio.get_event_loop()
+        try:
+            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(music, download=False))
+            song_url = data['url']
+            video_title = data.get("title", "Unknown title")
+        except Exception as e:
+            print(f"Error fetching YouTube video: {e}")
+            await interaction.followup.send("Failed to retrieve the song.", ephemeral=True)
+            return
 
         # Create an embed message
-        embed = discord.Embed(
+        embed_play = discord.Embed(
             title=f"▶️ | Now Playing: {video_title}",
             description=f"Requested by {interaction.user.mention}",
             color=discord.Colour.blurple()
         )
-        embed.add_field(name="🔗 Link", value=f"[Watch on YouTube]({music})", inline=False)
+        embed_play.add_field(name="🔗 Link", value=f"[Watch on YouTube]({music})", inline=False)
+
+        embed_append = discord.Embed(
+            title= f"▶️ | Added {video_title} to the queue.",
+            description=f"Requested by {interaction.user.mention}",
+            color=discord.Colour.blurple()
+        )
+        embed_append.add_field(name="🔗 Link", value=f"[Watch on YouTube]({music})", inline=False)
 
         if vc.is_playing():
             # Queue the song if another is playing
-            if interaction.guild.id not in self.queues:
-                self.queues[interaction.guild_id] = []
-            self.queues[interaction.guild_id].append((video_title, song_url))
-            await interaction.followup.send(f"Added **{video_title}** to the queue.")
+            self.queues.setdefault(interaction.guild_id, []).append(song_url)
+            self.song_cache.setdefault(interaction.guild_id, []).append((music, video_title))
+            await interaction.followup.send(embed=embed_append)
         else:
-            self.play(interaction=interaction, music=music)
-            await interaction.followup.send(embed=embed)  # Correctly sends the embed
+            await self.play(interaction=interaction, url=song_url)
+            await interaction.followup.send(embed=embed_play)  # Correctly sends the embed
 
     @app_commands.command(name="clear_queue", description="Clear bot current queue")
     async def clear_queue(self, interaction: discord.Interaction):
@@ -205,33 +205,19 @@ class Music(commands.Cog):
 
         guild_id = interaction.guild_id
 
-        # Check if queue exists and is not empty
-        if guild_id not in self.queues or not self.queues[guild_id]:
-            await interaction.followup.send("The queue is currently empty.", ephemeral=True)
-            return
-
         # Create an embed to display the queue
         embed = discord.Embed(title="🎶 | Music Queue", color=discord.Colour.blurple())
 
+        # Check if queue exists and is not empty
+        if guild_id not in self.queues or not self.queues[guild_id]:
+            embed.description = "The queue is currently empty"
+            await interaction.followup.send(embed=embed)
+            return
+        
         # List the songs in the queue
         queue_list = ""
-        for index, url in enumerate(self.queues[guild_id], start=1):
-            # Check if the song info is cached, otherwise fetch it
-            title = self.song_info_cache.get(url, "Unknown Title")
-
-            # If the title isn't cached, fetch it
-            if title == "Unknown Title":
-                try:
-                    loop = asyncio.get_event_loop()
-                    data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(url, download=False))
-                    title = data.get("title", "Unknown Title")
-
-                    # Cache the title for future use
-                    self.song_info_cache[url] = title
-                except Exception as e:
-                    print(f"Error fetching song info: {e}")
-                    title = "Unknown Title"
-
+        for index, song in enumerate(self.song_cache[guild_id], start=1):
+            url, title = song
             queue_list += f"**{index}.** [{title}]({url})\n"
 
         embed.description = queue_list
