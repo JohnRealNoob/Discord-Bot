@@ -11,7 +11,8 @@ class JoinLeave(commands.Cog):
         self.dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
         self.filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "channel.json")
 
-    def load(self, key_type: str):
+    def load(self, member: discord.Member, key_type: str):
+        guild_id = member.guild.id
         # Load JSON data safely
         try:
             with open(self.filename, "r") as file:
@@ -20,13 +21,14 @@ class JoinLeave(commands.Cog):
             return None
         
         try:
-            info = data[key_type]
+            info = data[guild_id][key_type]
         except Exception:
             return None
         
         return info
     
-    def write(self, key_type: str, info: int):
+    def write(self, interaction: discord.Interaction, key_type: str, info: int):
+        guild_id = interaction.guild_id
         # Load JSON data safely
         try:
             with open(self.filename, "r") as file:
@@ -34,7 +36,7 @@ class JoinLeave(commands.Cog):
         except (FileNotFoundError, json.JSONDecodeError):
             data = {}  # Initialize if file doesn't exist or is empty
 
-        data[key_type] = info
+        data[guild_id][key_type] = info
 
         # Write back to JSON file
         with open(self.filename, "w") as file:
@@ -42,8 +44,8 @@ class JoinLeave(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        greet_channel_id = self.load("greet")
-        greet_image = self.load("greet_image")
+        greet_channel_id = self.load(member=member, key_type="greet")
+        greet_image = self.load(member=member, key_type="greet_image")
         join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
 
         if greet_channel_id == None:
@@ -61,8 +63,8 @@ class JoinLeave(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        goodbye_channel_id = self.load("goodbye")
-        goodbye_image = self.load("goodbye_image")
+        goodbye_channel_id = self.load(member=member, key_type="goodbye")
+        goodbye_image = self.load(member=member, key_type="goodbye_image")
         join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
 
         if goodbye_channel_id == None:
@@ -80,28 +82,28 @@ class JoinLeave(commands.Cog):
     @app_commands.command(name="set_welcome_channel", description="Set Channel to Welcome User")
     async def set_welcome_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         channel_type = "greet"
-        self.write(key_type=channel_type, info=channel.id)
+        self.write(interaction=interaction, key_type=channel_type, info=channel.id)
 
         await interaction.response.send_message(f"```You set {channel} to greet channel```")
 
     @app_commands.command(name="set_welcome_image", description="Set Image to Welcome User")
     async def set_welcome_image(self, interaction: discord.Interaction, url: str):
         key_type = "greet_image"
-        self.write(key_type=key_type, info=url)
+        self.write(interaction=interaction, key_type=key_type, info=url)
 
         await interaction.response.send_message(f"```You set {url} to greet ```")
 
     @app_commands.command(name="set_goodbye_channel", description="Set Channel to Goodbye User")
     async def set_goodbye_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         channel_type = "goodbye"
-        self.write(key_type=channel_type, info=channel.id)
+        self.write(interaction=interaction, key_type=channel_type, info=channel.id)
 
         await interaction.response.send_message(f"```You set {channel} to goodbye channel```")
 
     @app_commands.command(name="set_goodbye_image", description="Set Image to Goodbye User")
     async def set_goodbye_image(self, interaction: discord.Interaction, url: str):
         key_type = "goodbye_image"
-        self.write(key_type=key_type, info=url)
+        self.write(interaction=interaction, key_type=key_type, info=url)
 
         await interaction.response.send_message(f"```You set {url} to goodbye ```")
 
