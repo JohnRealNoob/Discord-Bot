@@ -1,6 +1,5 @@
 import logging
 import logging.handlers
-import os
 from check_file import check_file_exists
 
 def log():

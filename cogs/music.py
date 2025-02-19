@@ -4,7 +4,7 @@ from discord  import app_commands
 import asyncio
 import yt_dlp
 import urllib.parse, urllib.request, re
-
+from utils.check_file import check_file_exists
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -12,6 +12,9 @@ class Music(commands.Cog):
         self.song_cache = {}
         self.voice_clients = {}
         self.timeout_duration = 60
+        self.dirname = "data"
+        self.filename = "music_playlist.json"
+        self.file_path = check_file_exists(dirname=self.dirname, filename=self.filename)
         self.youtube_base_url = 'https://www.youtube.com/'
         self.youtube_results_url = self.youtube_base_url + 'results?'
         self.youtube_watch_url = self.youtube_base_url + 'watch?v='
@@ -72,6 +75,11 @@ class Music(commands.Cog):
 
         # Call play function with the new song
         await self.play(interaction=interaction, url=link)
+    
+    async def add_playlist(self, url):
+        
+        with open(self.file_path, "w+") as file:
+            pass
 
     @app_commands.command(name="play", description="play music")
     async def play_music(self, interaction: discord.Interaction, music: str):
