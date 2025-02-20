@@ -1,6 +1,6 @@
 import logging
 import logging.handlers
-from check_file import check_file_exists
+from utils.manage_file import check_file_exists
 
 def log():
     # Set up logging

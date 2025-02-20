@@ -3,24 +3,21 @@ from discord.ext import commands
 from discord import app_commands
 
 import json
-from utils.check_file import check_file_exists 
+from utils.manage_file import *
 
 class JoinLeave(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.dirname= "data"
         self.filename = "channel.json"
+        self.file_path = check_file_exists(dirname=self.dirname, filename=self.filename)
 
     def load(self, member: discord.Member, key_type: str):
         guild_id = member.guild.id
         check_file_exists(dirname=self.dirname, filename=self.filename)
         # Load JSON data safely
-        try:
-            with open(self.filename, "r") as file:
-                data = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return None
-        
+
+        data = load_json(self.file_path)
         try:
             info = data[guild_id][key_type]
         except Exception:

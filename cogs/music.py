@@ -5,7 +5,7 @@ import asyncio
 import yt_dlp
 import json
 import urllib.parse, urllib.request, re
-from utils.check_file import check_file_exists
+from utils.manage_file import *
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -23,17 +23,36 @@ class Music(commands.Cog):
         self.ytdl = yt_dlp.YoutubeDL(self.yt_dl_options)
         self.ffmpeg_options = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5','options': '-vn -filter:a "volume=0.25"'}
 
-    async def search_yt(self, music: str):
-        query_string = urllib.parse.urlencode({"search_query": music})
-        content = urllib.request.urlopen(self.youtube_results_url + query_string)
-        search_results = re.findall(r'/watch\?v=(.{11})', content.read().decode())
+    async def search_yt(self, interaction: discord.Interaction, music: str):
+        if "youtube.com" not in music and "youtu.be" not in music:
+            query_string = urllib.parse.urlencode({"search_query": music})
+            content = urllib.request.urlopen(self.youtube_results_url + query_string)
+            search_results = re.findall(r'/watch\?v=(.{11})', content.read().decode())
 
-        if not search_results:
-            return None
-
-        music = self.youtube_watch_url + search_results[0]  # Convert search result to URL
+            if not search_results:
+                await interaction.followup.send("No YouTube results found.", ephemeral=True)
+                return None
+        else:
+            music = self.youtube_watch_url + search_results[0]  # Convert search result to URL
 
         return music
+
+    async def extract_song(self, interaction: discord.Interaction, music: str):
+        loop = asyncio.get_event_loop()
+        try:
+            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(music, download=False))
+            url = data['url']
+            title = data.get("title", "Unknown title")
+        except Exception as e:
+            print(f"Error fetching YouTube video: {e}")
+            await interaction.followup.send("Failed to retrieve the song.", ephemeral=True)
+            return None
+        return title, url
+    
+    async def add_queues(self, interaction: discord.Interaction, url: str, music: str, title: str):
+        # Queue the song if another is playing
+        self.queues.setdefault(interaction.guild_id, []).append(url)
+        self.song_cache.setdefault(interaction.guild_id, []).append((music, title))
 
     async def play(self, interaction: discord.Interaction, url: str):
         # Play audio
@@ -79,27 +98,30 @@ class Music(commands.Cog):
     
     async def add_playlist(self, interaction: discord.Interaction, pl_name: str, title: str, url: str):
         user_id = interaction.user.id
-        try:
-            with open(self.file_path, "r") as file:
-                playlist = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return None
-        
-        playlist[user_id][pl_name].append((title, url))
+
+        playlist = load_json(self.file_path) or {}
+
+        if user_id not in playlist:
+            playlist[user_id] = {}  # Initialize a dictionary for the user
+
+        if pl_name not in playlist[user_id]:
+            playlist[user_id][pl_name] = []  # Initialize the playlist as an empty list
+
+        playlist.que[user_id][pl_name].append((title, url))
 
         with open(self.file_path, "w") as file:
             json.dump(playlist, file, indent=4)
 
-    async def queue_playlist(self, interaction: discord.Interaction, pl_name: str):
+    async def add_queue_playlist(self, interaction: discord.Interaction, pl_name: str):
         user_id = interaction.user.id
-        guild_id =  interaction.guild_id
-        try:
-            with open(self.file_path, "r") as file:
-                playlist = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return None
-        self.queues[guild_id].append(playlist[user_id])
         
+        playlist = load_json(self.file_path) or {}
+
+        for song in playlist[user_id][pl_name]:
+            music = song[1]
+            url = await self.extract_song(interaction=interaction, music=music)
+            self.queues.setdefault(interaction.guild_id, []).append(url)
+            self.song_cache.setdefault(interaction.guild_id, []).append(song)
 
     @app_commands.command(name="play", description="play music")
     async def play_music(self, interaction: discord.Interaction, music: str):
@@ -124,21 +146,13 @@ class Music(commands.Cog):
         song_url = None
         video_title = None
 
-        # Search for YouTube video if not a direct link
-        if "youtube.com" not in music and "youtu.be" not in music:
-            music = await self.search_yt(music)
-            if not music:
-                await interaction.followup.send("No YouTube results found.", ephemeral=True)
-                return
+        music = await self.search_yt(interaction=interaction, music=music)
+        if not music:
+            return
 
-        loop = asyncio.get_event_loop()
-        try:
-            data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(music, download=False))
-            song_url = data['url']
-            video_title = data.get("title", "Unknown title")
-        except Exception as e:
-            print(f"Error fetching YouTube video: {e}")
-            await interaction.followup.send("Failed to retrieve the song.", ephemeral=True)
+        result = await self.extract_song(interaction=interaction, music=music)
+        video_title, song_url = result if result else ("Unknown Title", None)
+        if not song_url:
             return
 
         # Create an embed message
@@ -157,13 +171,24 @@ class Music(commands.Cog):
         embed_append.add_field(name="🔗 Link", value=f"[Watch on YouTube]({music})", inline=False)
 
         if vc.is_playing():
-            # Queue the song if another is playing
-            self.queues.setdefault(interaction.guild_id, []).append(song_url)
-            self.song_cache.setdefault(interaction.guild_id, []).append((music, video_title))
+            await self.add_queues(interaction=interaction, url=song_url, music=music, title=video_title)
             await interaction.followup.send(embed=embed_append)
         else:
             await self.play(interaction=interaction, url=song_url)
             await interaction.followup.send(embed=embed_play)  # Correctly sends the embed
+
+    @app_commands.command(name="add_playlist", description="Add song to your playlist")
+    async def add_pl(self, interaction: discord.Interaction, pl_name: str, music):
+
+        music = await self.search_yt(interaction=interaction, music=music)
+        if not music:
+            return
+        result = await self.extract_song(interaction=interaction, music=music)
+        video_title, song_url = result if result else ("Unknown Title", None)
+        if not song_url:
+            return
+        
+        await self.add_playlist(interaction=interaction, pl_name=pl_name, title=video_title, url=music)
 
     @app_commands.command(name="clear_queue", description="Clear bot current queue")
     async def clear_queue(self, interaction: discord.Interaction):
