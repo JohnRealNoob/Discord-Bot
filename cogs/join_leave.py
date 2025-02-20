@@ -3,23 +3,21 @@ from discord.ext import commands
 from discord import app_commands
 
 import json
-import os
+from utils.manage_file import *
 
 class JoinLeave(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
-        self.filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "channel.json")
+        self.dirname= "data"
+        self.filename = "channel.json"
+        self.file_path = check_file_exists(dirname=self.dirname, filename=self.filename)
 
     def load(self, member: discord.Member, key_type: str):
         guild_id = member.guild.id
+        check_file_exists(dirname=self.dirname, filename=self.filename)
         # Load JSON data safely
-        try:
-            with open(self.filename, "r") as file:
-                data = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            return None
-        
+
+        data = load_json(self.file_path)
         try:
             info = data[guild_id][key_type]
         except Exception:
@@ -29,6 +27,7 @@ class JoinLeave(commands.Cog):
     
     def write(self, interaction: discord.Interaction, key_type: str, info: int):
         guild_id = interaction.guild_id
+        check_file_exists(dirname=self.dirname, filename=self.filename)
         # Load JSON data safely
         try:
             with open(self.filename, "r") as file:
