@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord  import app_commands
 import asyncio
 import yt_dlp
+import json
 import urllib.parse, urllib.request, re
 from utils.check_file import check_file_exists
 class Music(commands.Cog):
@@ -76,10 +77,29 @@ class Music(commands.Cog):
         # Call play function with the new song
         await self.play(interaction=interaction, url=link)
     
-    async def add_playlist(self, url):
+    async def add_playlist(self, interaction: discord.Interaction, pl_name: str, title: str, url: str):
+        user_id = interaction.user.id
+        try:
+            with open(self.file_path, "r") as file:
+                playlist = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return None
         
-        with open(self.file_path, "w+") as file:
-            pass
+        playlist[user_id][pl_name].append((title, url))
+
+        with open(self.file_path, "w") as file:
+            json.dump(playlist, file, indent=4)
+
+    async def queue_playlist(self, interaction: discord.Interaction, pl_name: str):
+        user_id = interaction.user.id
+        guild_id =  interaction.guild_id
+        try:
+            with open(self.file_path, "r") as file:
+                playlist = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return None
+        self.queues[guild_id].append(playlist[user_id])
+        
 
     @app_commands.command(name="play", description="play music")
     async def play_music(self, interaction: discord.Interaction, music: str):
