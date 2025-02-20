@@ -32,7 +32,7 @@ class Music(commands.Cog):
             if not search_results:
                 await interaction.followup.send("No YouTube results found.", ephemeral=True)
                 return None
-        else:
+        
             music = self.youtube_watch_url + search_results[0]  # Convert search result to URL
 
         return music
@@ -56,7 +56,6 @@ class Music(commands.Cog):
 
     async def play(self, interaction: discord.Interaction, url: str):
         # Play audio
-        guild_id = interaction.guild_id
 
         player = discord.FFmpegOpusAudio(url, **self.ffmpeg_options)
 
@@ -107,7 +106,7 @@ class Music(commands.Cog):
         if pl_name not in playlist[user_id]:
             playlist[user_id][pl_name] = []  # Initialize the playlist as an empty list
 
-        playlist.que[user_id][pl_name].append((title, url))
+        playlist[user_id][pl_name].append((title, url))
 
         with open(self.file_path, "w") as file:
             json.dump(playlist, file, indent=4)
@@ -178,8 +177,8 @@ class Music(commands.Cog):
             await interaction.followup.send(embed=embed_play)  # Correctly sends the embed
 
     @app_commands.command(name="add_playlist", description="Add song to your playlist")
-    async def add_pl(self, interaction: discord.Interaction, pl_name: str, music):
-
+    async def add_pl(self, interaction: discord.Interaction, pl_name: str, music: str):
+        interaction.response.defer(thinking=True)
         music = await self.search_yt(interaction=interaction, music=music)
         if not music:
             return
@@ -189,6 +188,14 @@ class Music(commands.Cog):
             return
         
         await self.add_playlist(interaction=interaction, pl_name=pl_name, title=video_title, url=music)
+        embed = discord.Embed(
+            title=f"▶️ | Add Song: {video_title}",
+            description=f"To playlist {pl_name}",
+            color=discord.Colour.blurple()
+        )
+        embed.add_field(name="🔗 Link", value=f"[Watch on YouTube]({music})", inline=False)
+
+        await interaction.followup.send(embed=embed)
 
     @app_commands.command(name="clear_queue", description="Clear bot current queue")
     async def clear_queue(self, interaction: discord.Interaction):

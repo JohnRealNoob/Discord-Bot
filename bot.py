@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import os
 from utils.logging import log
-from config.config import TOKEN, GUILD_ID
+from config.config import TOKEN
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
