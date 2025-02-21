@@ -1,7 +1,7 @@
 import os
 import json
 
-__all__ = ["check_file_exists", "load_json"]
+__all__ = ["check_file_exists", "load_json", "write_json"]
 
 def check_file_exists(dirname=None, filename=None, file_path=None):
     if file_path is None:
@@ -16,11 +16,14 @@ def check_file_exists(dirname=None, filename=None, file_path=None):
         return path
     
 def load_json(file_path: str):
-    check_file_exists(path=file_path)
+    check_file_exists(file_path=file_path)
     try:
         with open(file_path, "r") as file:
-            data = json.load(file)
+            return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
-        return None
-
-    return data
+        return {}
+    
+def write_json(file_path: str, data):
+    check_file_exists(file_path=file_path)
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)

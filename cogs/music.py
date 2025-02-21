@@ -4,6 +4,7 @@ from discord  import app_commands
 import asyncio
 import yt_dlp
 import json
+import re
 import urllib.parse, urllib.request, re
 from utils.manage_file import *
 class Music(commands.Cog):
@@ -40,20 +41,38 @@ class Music(commands.Cog):
     async def extract_song(self, interaction: discord.Interaction, music: str):
         loop = asyncio.get_event_loop()
         try:
+            # Extract information (don't download)
             data = await loop.run_in_executor(None, lambda: self.ytdl.extract_info(music, download=False))
-            url = data['url']
-            title = data.get("title", "Unknown title")
+
+            # Check if the data is a playlist or a single video
+            if "entries" in data:  # It's a playlist
+                songs = []
+                for entry in data["entries"]:
+                    title = entry.get("title", "Unknown title")
+                    url = entry.get("url", "")
+                    songs.append((title, url))
+                return songs  # Return list of song titles and URLs
+            else:  # Single video
+                title = data.get("title", "Unknown title")
+                url = data.get("url", "")
+                return [(title, url)]  # Return as a list with one song
+
         except Exception as e:
-            print(f"Error fetching YouTube video: {e}")
+            print(f"Error fetching YouTube song: {e}")
             await interaction.followup.send("Failed to retrieve the song.", ephemeral=True)
             return None
-        return title, url
     
     async def add_queues(self, interaction: discord.Interaction, url: str, music: str, title: str):
         # Queue the song if another is playing
         self.queues.setdefault(interaction.guild_id, []).append(url)
         self.song_cache.setdefault(interaction.guild_id, []).append((music, title))
 
+    def is_youtube_playlist(self, url: str) -> bool:
+        # Regex to match YouTube playlist URLs
+        playlist_regex = r"^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.*(\?list=|\/playlist\?list=)[A-Za-z0-9_-]{34}$"
+        
+        return bool(re.match(playlist_regex, url))
+    
     async def play(self, interaction: discord.Interaction, url: str):
         # Play audio
 
@@ -142,17 +161,17 @@ class Music(commands.Cog):
                 await interaction.followup.send("Failed to connect to the voice channel.", ephemeral=True)
                 return
 
-        song_url = None
-        video_title = None
+        song_url = []
+        video_title = []
 
         music = await self.search_yt(interaction=interaction, music=music)
         if not music:
             return
 
         result = await self.extract_song(interaction=interaction, music=music)
-        video_title, song_url = result if result else ("Unknown Title", None)
-        if not song_url:
-            return
+        for song in result:
+            video_title.append(song[0])
+            song_url.append(song[1])
 
         # Create an embed message
         embed_play = discord.Embed(
@@ -173,8 +192,12 @@ class Music(commands.Cog):
             await self.add_queues(interaction=interaction, url=song_url, music=music, title=video_title)
             await interaction.followup.send(embed=embed_append)
         else:
-            await self.play(interaction=interaction, url=song_url)
-            await interaction.followup.send(embed=embed_play)  # Correctly sends the embed
+            if len(song_url) > 1:
+                await self.play(interaction=interaction, url=song_url[0])
+                await interaction.followup.send(embed=embed_play)
+            else:
+                await self.play(interaction=interaction, url=song_url[0])
+                await interaction.followup.send(embed=embed_play)  # Correctly sends the embed
 
     @app_commands.command(name="add_playlist", description="Add song to your playlist")
     async def add_pl(self, interaction: discord.Interaction, pl_name: str, music: str):
