@@ -183,7 +183,7 @@ class MusicCog(commands.Cog):
                             songs_to_add.append({"video_id": entry['id'], "title": entry['title']})
                 else:  # Single song
                     songs_to_add.append({"video_id": info['id'], "title": info['title']})
-                if type == "personal":
+                if type.value == "personal":
                     user_id = str(interaction.user.id)
                     if user_id not in self.user_playlists:
                         self.user_playlists[user_id] = {}
@@ -219,7 +219,7 @@ class MusicCog(commands.Cog):
         if not music_player:
             return
         try:
-            if type == "personal":
+            if type.value == "personal":
                 user_id = str(interaction.user.id)
                 if user_id not in self.user_playlists or playlist_name not in self.user_playlists[user_id]:
                     await interaction.followup.send(f"You don't have a personal playlist named '{playlist_name}'.", ephemeral=True)
