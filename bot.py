@@ -1,10 +1,8 @@
-# bot.py
 import discord
 from discord.ext import commands
 import asyncio
-import os
-from config import TOKEN, ConfigError, PREFIX, INTENTS, EXCLUDED_COGS
-
+from config import TOKEN, ConfigError, PREFIX, INTENTS
+from utils import setup_logging
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix=PREFIX, intents=INTENTS)
@@ -15,7 +13,7 @@ class Client(commands.Bot):
 
     async def setup_hook(self):
         print("Setting up bot...")
-        await self.load_extension("cogs")
+        await self.load_extension("cogs")  # Load all cogs via __init__.py
         try:
             synced = await self.tree.sync()
             print(f"Synced {len(synced)} commands at startup.")
@@ -26,6 +24,7 @@ client = Client()
 
 if __name__ == "__main__":
     try:
+        setup_logging()
         asyncio.run(client.start(TOKEN))
     except ConfigError as e:
         print(f"Configuration error: {e}")
