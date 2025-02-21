@@ -2,7 +2,7 @@ import logging
 import logging.handlers
 from utils.manage_file import check_file_exists
 
-def log():
+def setup_logging():
     # Set up logging
     dirname = "logs"
     file_name = "discord.log"
