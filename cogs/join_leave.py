@@ -9,7 +9,7 @@ class JoinLeave(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.dirname= "data"
-        self.filename = "channel.json"
+        self.filename = "joinleave_channel.json"
         self.file_path = check_file_exists(dirname=self.dirname, filename=self.filename)
 
     def load(self, member: discord.Member, key_type: str):
