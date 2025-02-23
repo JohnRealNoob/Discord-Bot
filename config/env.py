@@ -26,5 +26,8 @@ def validate_discord_id(value: str) -> int:
 try:
     TOKEN = get_env_var("DISCORD_TOKEN")
     OWNER_ID = validate_discord_id(get_env_var("OWNER_ID"))
+    LAVALINK_HOST = get_env_var("LAVALINK_HOST")
+    LAVALINK_PASSWORD = get_env_var("LAVALINK_PASSWORD")
+    LAVALINK_PORT = int(get_env_var("LAVALINK_PORT"))
 except ConfigError as e:
     raise  # Re-raise to be caught by the main application
