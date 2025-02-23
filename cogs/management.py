@@ -30,16 +30,20 @@ class Management(commands.Cog):
             return []
         return [f[:-3] for f in os.listdir(cogs_dir) if f.endswith(".py") and f != "__init__.py"]
 
+    async def cog_autocomplete(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
+        cogs = self.get_available_cogs()
+        choices = [app_commands.Choice(name="all", value="all")] + [
+            app_commands.Choice(name=cog, value=cog) for cog in cogs if current.lower() in cog.lower()
+        ]
+        return choices[:25]  # Discord limits to 25 choices
+
     @app_commands.command(name="reload", description="Reload a cog or all cogs.")
-    @app_commands.choices(cog=[
-        app_commands.Choice(name="all", value="all"),
-        *[app_commands.Choice(name=cog, value=cog) for cog in get_available_cogs()]
-    ])
-    async def reload(self, interaction: discord.Interaction, cog: app_commands.Choice[str]):
+    @app_commands.autocomplete(cog=cog_autocomplete)
+    async def reload(self, interaction: discord.Interaction, cog: str):  # Changed to plain str
         if not await self.is_owner(interaction):
             await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
             return
-        selected_cog = cog.value
+        selected_cog = cog  # No .value needed since it's a plain str now
         if selected_cog.lower() == "all":
             reloaded = []
             for filename in os.listdir("./cogs"):
@@ -61,18 +65,16 @@ class Management(commands.Cog):
                 await interaction.response.send_message(f"Error reloading `{selected_cog}`: {e}", ephemeral=True)
 
     @app_commands.command(name="load", description="Load a specific cog")
-    @app_commands.choices(cog_name=[
-        app_commands.Choice(name=cog, value=cog) for cog in get_available_cogs()
-    ])
-    async def load_cog(self, interaction: discord.Interaction, cog: app_commands.Choice[str]):
+    @app_commands.autocomplete(cog_name=cog_autocomplete)
+    async def load_cog(self, interaction: discord.Interaction, cog_name: str):  # Changed to plain str
         if not await self.is_owner(interaction):
             await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
             return
         try:
-            await self.bot.load_extension(f"cogs.{cog.value}")
-            await interaction.response.send_message(f"Cog `{cog.value}` loaded successfully.", ephemeral=True)
+            await self.bot.load_extension(f"cogs.{cog_name}")
+            await interaction.response.send_message(f"Cog `{cog_name}` loaded successfully.", ephemeral=True)
         except Exception as e:
-            await interaction.response.send_message(f"Error loading `{cog.value}`: {str(e)}", ephemeral=True)
+            await interaction.response.send_message(f"Error loading `{cog_name}`: {str(e)}", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(Management(bot))

@@ -1,5 +1,5 @@
-from .env import TOKEN, OWNER_ID
+from .env import TOKEN, OWNER_ID, LAVALINK_HOST, LAVALINK_PASSWORD, LAVALINK_PORT
 from .errors import ConfigError
 from .settings import PREFIX, INTENTS, EXCLUDED_COGS
 
-__all__ = ["TOKEN", "OWNER_ID", "ConfigError", "PREFIX", "INTENTS", "EXCLUDED_COGS"]
+__all__ = ["TOKEN", "OWNER_ID", "ConfigError", "PREFIX", "INTENTS", "EXCLUDED_COGS", "LAVALINK_HOST", "LAVALINK_PASSWORD", "LAVALINK_PORT"]

@@ -6,19 +6,40 @@ class Utility(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Command: Warn user
-    @app_commands.command(name="warn", description="warn user")
+    @app_commands.command(name="warn", description="Warn a user with a reason")
     @app_commands.checks.has_permissions(administrator=True)
-    async def warn(interaction: discord.Interaction, member: discord.Member, reason: str):
+    @app_commands.describe(user="The member to warn", reason="The reason for the warning")
+    async def warn(self, interaction: discord.Interaction, user: discord.Member, reason: str):
+        """Warn a specified member with a given reason."""
+        if user == interaction.user:
+            await interaction.response.send_message("You cannot warn yourself!", ephemeral=True)
+            return
+        if user.bot:
+            await interaction.response.send_message("You cannot warn bots!", ephemeral=True)
+            return
 
-        embed = discord.Embed(title="Warning", description=reason, color=discord.Color.red())
+        embed = discord.Embed(
+            title="Warning",
+            description=f"You’ve been warned in **{interaction.guild.name}** for: {reason}",
+            color=discord.Color.red()
+        )
+        embed.set_footer(text=f"Warned by {interaction.user}")
 
         try:
-            await member.send(embed=embed)  # Attempt to send the DM
+            await user.send(embed=embed)
+            await interaction.response.send_message(f"Successfully warned {user.mention} for: `{reason}`", ephemeral=True)
         except discord.Forbidden:
-            print(f"Could not DM {member.name}. DMs might be disabled or the bot is blocked.")
+            print(f"Could not DM {user.name}. DMs might be disabled or the bot is blocked.")
+            await interaction.response.send_message(
+                f"Warned {user.mention} for: `{reason}`, but they couldn’t be DM’d (DMs disabled or bot blocked).",
+                ephemeral=True
+            )
         except discord.HTTPException as e:
-            print(f"An error occurred while sending the DM to {member.name}: {e}")
-    
+            print(f"DM error for {user.name}: {e}")
+            await interaction.response.send_message(
+                f"Failed to DM {user.mention} for: `{reason}` due to an error: {e}",
+                ephemeral=True
+            )
+
 async def setup(bot):
     await bot.add_cog(Utility(bot))

@@ -1,9 +1,8 @@
-# bot.py
 import discord
 from discord.ext import commands
 import asyncio
-import os
-from config import TOKEN, ConfigError, PREFIX, INTENTS, EXCLUDED_COGS
+from config import TOKEN, ConfigError, PREFIX, INTENTS
+from utils import setup_logging
 
 class Client(commands.Bot):
     def __init__(self):
@@ -15,18 +14,22 @@ class Client(commands.Bot):
 
     async def setup_hook(self):
         print("Setting up bot...")
-        await self.load_extension("cogs")
+        await self.load_extension("cogs")  # Load all cogs via __init__.py
         try:
             synced = await self.tree.sync()
             print(f"Synced {len(synced)} commands at startup.")
         except Exception as e:
             print(f"Failed to sync commands: {e}")
 
-client = Client()
+    async def close(self):
+        print("Shutting down bot...")
+        await super().close()  # Closes the bot's HTTP session and event loop
 
-if __name__ == "__main__":
+async def main():
+    bot = Client()
     try:
-        asyncio.run(client.start(TOKEN))
+        setup_logging()
+        await bot.start(TOKEN)
     except ConfigError as e:
         print(f"Configuration error: {e}")
         print("Please check your .env file and ensure DISCORD_TOKEN and OWNER_ID are set correctly.")
@@ -34,5 +37,13 @@ if __name__ == "__main__":
         print("Invalid Discord token. Please verify your DISCORD_TOKEN in .env")
     except KeyboardInterrupt:
         print("Bot stopped by user")
+        await bot.close()  # Ensure bot closes cleanly on Ctrl+C
     except Exception as e:
         print(f"Bot failed to start: {e}")
+    finally:
+        # Ensure the bot is closed even if an error occurs
+        if not bot.is_closed():
+            await bot.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
