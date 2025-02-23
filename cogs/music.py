@@ -7,7 +7,6 @@ from config import LAVALINK_HOST, LAVALINK_PASSWORD, LAVALINK_PORT
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.node_connected = False
 
     async def connect_nodes(self):
         try:
@@ -16,16 +15,13 @@ class Music(commands.Cog):
                 password=LAVALINK_PASSWORD
             )
             await wavelink.Pool.connect(nodes=[node], client=self.bot)
-            self.node_connected = True
             print("Lavalink node connected successfully!")
         except Exception as e:
             print(f"Failed to connect to Lavalink: {e}")
-            self.node_connected = False
 
     @commands.Cog.listener()
     async def on_ready(self):
-        if not self.node_connected:
-            await self.connect_nodes()
+        await self.connect_nodes()
 
     async def check_voice_channel(self, interaction: discord.Interaction):
         if not interaction.user.voice:
@@ -34,12 +30,12 @@ class Music(commands.Cog):
         return True
 
     async def ensure_node(self, interaction: discord.Interaction):
-        if not self.node_connected:
+        nodes = wavelink.Pool.nodes
+        if not nodes:
             await interaction.response.send_message("Lavalink node not connected yet. Please try again in a moment.", ephemeral=True)
             return False
         return True
 
-    # Event listener for track end (per latest wavelink docs)
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, payload: wavelink.TrackEndEventPayload):
         player: wavelink.Player = payload.player
@@ -47,7 +43,19 @@ class Music(commands.Cog):
             next_track = player.queue.get()
             await player.play(next_track)
             if player.channel:
-                await player.channel.send(f"Now playing: {next_track.title}")
+                duration = self.format_duration(next_track.length)
+                await player.channel.send(
+                    f"Now playing:\n**Title:** {next_track.title}\n**Link:** {next_track.uri}\n**Duration:** {duration}"
+                )
+
+    def format_duration(self, milliseconds: int) -> str:
+        seconds = milliseconds // 1000
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds %= 60
+        if hours > 0:
+            return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        return f"{minutes:02d}:{seconds:02d}"
 
     @app_commands.command(name="play", description="Play a song or playlist from YouTube")
     @app_commands.describe(query="The song or playlist URL to search for")
@@ -60,35 +68,48 @@ class Music(commands.Cog):
         player: wavelink.Player = interaction.guild.voice_client
         if not player:
             player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
-            player.autoplay = wavelink.AutoPlayMode.enabled  # Enable autoplay
+            player.autoplay = wavelink.AutoPlayMode.enabled
 
         search_result = await wavelink.Playable.search(query)
         if not search_result:
             await interaction.followup.send("No songs or playlists found!")
             return
 
-        print(f"Search result type: {type(search_result)}")
+        embed = discord.Embed(
+            title="🎶 | Music Queue",
+            description=f"Requested by {interaction.user.mention}",
+            color=discord.Colour.blurple()
+        )
 
         if isinstance(search_result, wavelink.Playlist):
             tracks = search_result.tracks
-            if not player.playing:
-                await player.play(tracks[0])
-                await interaction.followup.send(f"Now playing: {tracks[0].title} (from playlist: {search_result.name})")
-                for track in tracks[1:]:
-                    player.queue.put(track)
-                await interaction.followup.send(f"Added {len(tracks) - 1} songs to the queue from playlist: {search_result.name}")
-            else:
-                for track in tracks:
-                    player.queue.put(track)
-                await interaction.followup.send(f"Added {len(tracks)} songs to the queue from playlist: {search_result.name}")
+            total_length_ms = sum(track.length for track in tracks)  # Sum all track lengths in milliseconds
+            total_duration = self.format_duration(total_length_ms)   # Convert to MM:SS
+            first_track = tracks[0]
+            duration = self.format_duration(first_track.length)
+            playlist_link = query if query.startswith("http") else tracks[0].uri
+            await player.play(first_track)
+            embed.add_field(
+                name=f"Added from playlist: [**{search_result.name}**]({playlist_link})",
+                value=f"**{len(tracks)} song(s)** from the playlist\nTotal Duration: {total_duration}",
+                inline=False
+            )
+            for track in tracks[1:]:
+                player.queue.put(track)
         else:
             track = search_result[0] if isinstance(search_result, list) else search_result
+            duration = self.format_duration(track.length)
+            embed.add_field(
+                name=f"[**{track.title}**]({track.uri})",
+                value=f"Duration: {duration}",
+                inline=False
+            )
             if not player.playing:
                 await player.play(track)
-                await interaction.followup.send(f"Now playing: {track.title}")
             else:
                 player.queue.put(track)
-                await interaction.followup.send(f"Added to queue: {track.title}")
+
+        await interaction.followup.send(embed=embed)
 
     @app_commands.command(name="skip", description="Skip the current song")
     async def skip(self, interaction: discord.Interaction):
@@ -102,11 +123,13 @@ class Music(commands.Cog):
 
         await player.stop()
         await interaction.response.send_message("Song skipped!")
-        # Autoplay should handle the next track, but we add a fallback
         if not player.queue.is_empty and not player.playing:
             next_track = player.queue.get()
             await player.play(next_track)
-            await interaction.response.send_message(f"Now playing: {next_track.title}")
+            duration = self.format_duration(next_track.length)
+            await interaction.response.send_message(
+                f"Now playing:\n**Title:** {next_track.title}\n**Link:** {next_track.uri}\n**Duration:** {duration}"
+            )
 
     @app_commands.command(name="pause", description="Pause the current song")
     async def pause(self, interaction: discord.Interaction):
@@ -139,16 +162,25 @@ class Music(commands.Cog):
 
     @app_commands.command(name="queue", description="Show the current queue")
     async def queue(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         if not await self.check_voice_channel(interaction) or not await self.ensure_node(interaction):
             return
 
         player: wavelink.Player = interaction.guild.voice_client
         if not player or player.queue.is_empty:
-            await interaction.response.send_message("Queue is empty!", ephemeral=True)
+            await interaction.followup.send("Queue is empty!", ephemeral=True)
             return
 
-        queue_list = "\n".join([f"{i+1}. {track.title}" for i, track in enumerate(player.queue)])
-        await interaction.response.send_message(f"Current queue:\n{queue_list}")
+        embed = discord.Embed(
+            title="🎶 | Music Queue",
+            color=discord.Colour.blurple()
+        )
+
+        queue_list = "\n".join(
+            [f"**{i+1}.** [{track.title}]({track.uri})\n" for i, track in enumerate(player.queue)]
+        )
+        embed.description = queue_list
+        await interaction.followup.send(embed=embed)
 
     @app_commands.command(name="disconnect", description="Disconnect the bot from voice")
     async def disconnect(self, interaction: discord.Interaction):
