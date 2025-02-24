@@ -1,20 +1,9 @@
 import sqlite3
 from utils import check_file_exists
 
+__all__ = ["insert_channel", "get_channel"]
+
 PATH = check_file_exists("data", "bot.db")
-
-def create_table() -> None:
-    connection = sqlite3.connect(PATH)
-    cursor = connection.cursor()
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS channels (
-        guild_id INTEGER PRIMARY KEY,
-        join_channel_id INTEGER DEFAULT NULL,
-        leave_channel_id INTEGER DEFAULT NULL
-    )''')
-    
-    connection.commit()
-    connection.close()
 
 def check_table(table_name: str):
     connection = sqlite3.connect(PATH)
@@ -27,7 +16,7 @@ def check_table(table_name: str):
     return table_exists
 
 
-def insert_channel(guild_id = None, join_channel = None, leave_channel = None) -> None:
+def insert_channel(guild_id = None, join = None ,channel = None) -> None:
     connection = sqlite3.connect(PATH)
     cursor = connection.cursor()
 
@@ -37,10 +26,10 @@ def insert_channel(guild_id = None, join_channel = None, leave_channel = None) -
         return False
     
     if table_exists:
-        if not join_channel:
-            cursor.execute("INSERT INTO channels (guild_id, join_channel_id) VALUES (?, ?)",  guild_id, join_channel)
-        elif not leave_channel:
-            cursor.execute("INSERT INTO channels (guild_id, leave_channel_id) VALUES (?, ?)", guild_id, leave_channel)
+        if join:
+            cursor.execute("INSERT INTO channels (guild_id, join_channel_id) VALUES (?, ?)",  guild_id, channel)
+        elif not join:
+            cursor.execute("INSERT INTO channels (guild_id, leave_channel_id) VALUES (?, ?)", guild_id, channel)
         else:
             return False
     else:
@@ -49,7 +38,7 @@ def insert_channel(guild_id = None, join_channel = None, leave_channel = None) -
     connection.commit() 
     connection.close()
 
-def update_channel(guild_id = None, join = None):
+def get_channel(guild_id = None, join = None):
     if not guild_id or not type:
         return False
     
@@ -60,7 +49,7 @@ def update_channel(guild_id = None, join = None):
     else:
         channel = cursor.execute("SELECT leave_channel_id FROM channels WHERE guild_id = ?", guild_id)
     
-    channel_id = channel.fetchone()
+    channel_id = channel.fetchone() is not None
 
     connection.commit()
     connection.close()
