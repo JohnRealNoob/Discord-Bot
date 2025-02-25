@@ -1,6 +1,7 @@
 import sqlite3
-from utils import check_file_exists
+from utils.manage_file import check_file_exists
 import os
+import asyncio
 
 PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "bot.db")
 
@@ -22,5 +23,7 @@ async def create_table() -> None:
     connection.commit()
     connection.close()
 
+async def main():
+    await create_table()
 if __name__ == "__main__":
-    create_table()
+    asyncio.run(main())

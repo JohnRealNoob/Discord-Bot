@@ -10,4 +10,7 @@ services:
       - LAVALINK_HOST=${LAVALINK_HOST} 
       - LAVALINK_PASSWORD=${LAVALINK_PASSWORD} 
       - LAVALINK_PORT=${LAVALINK_PORT} 
-    restart: unless-stopped  # Restart bot if it crashes
+    restart: unless-stopped  
+  
+volumes:
+  db-data:
