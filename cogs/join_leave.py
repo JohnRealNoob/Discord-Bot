@@ -2,28 +2,16 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-from utils.sqlite import get_channel, insert_channel
+from utils.sqlite import update, get
 class JoinLeave(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def load(self, member: discord.Member, join: bool):
-        guild_id = member.guild.id
-
-        info = get_channel(guild_id=guild_id, join=join)
-
-        return info
-    
-    async def write(self, interaction: discord.Interaction, join: bool, channel: int):
-        guild_id = interaction.guild_id
-
-        if not insert_channel(guild_id=guild_id, join=join, leave_channel=channel):
-            await interaction.followup.send("```Failed to update channel```") 
-
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        greet_channel_id = await self.load(member=member, join=True)
-        greet_image = self.load(member=member, key_type="greet_image")
+        guild_id = member.guild.id
+        greet_channel_id = await get(guild_id=guild_id, type_="join_channel_id")
+        greet_image = await get(guild_id=guild_id, type_="join_image")
         join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
 
         if greet_channel_id == None:
@@ -41,8 +29,9 @@ class JoinLeave(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
-        goodbye_channel_id = await self.load(member=member, join=False)
-        goodbye_image = self.load(member=member, key_type="goodbye_image")
+        guild_id = member.guild.id
+        goodbye_channel_id = get(guild_id=guild_id, type_="leave_channel_id")
+        goodbye_image = await get(guild_id=guild_id, type_="leave_image")
         join_time = member.joined_at.strftime("%Y-%m-%d %H:%M:%S")
 
         if goodbye_channel_id == None:
@@ -59,29 +48,47 @@ class JoinLeave(commands.Cog):
 
     @app_commands.command(name="set_welcome_channel", description="Set Channel to Welcome User")
     async def set_welcome_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        await self.write(interaction=interaction, join=True, info=channel.id)
+        interaction.response.defer()
+        guild_id = interaction.guild.id
 
-        await interaction.response.send_message(f"```You set {channel} to greet channel```")
+        try:
+            await update(guild_id=guild_id, data=channel, type_="join_channel_id")
+            await interaction.followup.send(f"```You set {channel} to welcome channel```")
+        except Exception as e:
+            await interaction.followup.send(f"```Fail to update welcome channel : {e}```")
 
     @app_commands.command(name="set_welcome_image", description="Set Image to Welcome User")
     async def set_welcome_image(self, interaction: discord.Interaction, url: str):
-        await self.write(interaction=interaction, join=False, info=url)
-
-        await interaction.response.send_message(f"```You set {url} to greet ```")
+        interaction.response.defer()
+        guild_id = interaction.guild.id
+        
+        try:
+            await update(guild_id=guild_id, data=url, type_="join_image")
+            await interaction.followup.send(f"```You set {url} to welcome images```")
+        except Exception as e:
+            await interaction.followup.send(f"```Fail to update welcome images : {e}```")
 
     @app_commands.command(name="set_goodbye_channel", description="Set Channel to Goodbye User")
     async def set_goodbye_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        channel_type = "goodbye"
-        await self.write(interaction=interaction, key_type=channel_type, info=channel.id)
+        interaction.response.defer()
+        guild_id = interaction.guild.id
 
-        await interaction.response.send_message(f"```You set {channel} to goodbye channel```")
+        try:
+            await update(guild_id=guild_id, data=channel, type_="leave_channel_id")
+            await interaction.followup.send(f"```You set {channel} to goodbye channel```")
+        except Exception as e:
+            await interaction.followup.send(f"```Fail to update goodbye channel : {e}```")
 
     @app_commands.command(name="set_goodbye_image", description="Set Image to Goodbye User")
     async def set_goodbye_image(self, interaction: discord.Interaction, url: str):
-        key_type = "goodbye_image"
-        await self.write(interaction=interaction, key_type=key_type, info=url)
-
-        await interaction.response.send_message(f"```You set {url} to goodbye ```")
+        interaction.response.defer()
+        guild_id = interaction.guild.id
+        
+        try:
+            await update(guild_id=guild_id, data=url, type_="leave_image")
+            await interaction.followup.send(f"```You set {url} to goodbye images```")
+        except Exception as e:
+            await interaction.followup.send(f"```Fail to update goodbye images : {e}```")
 
 async def setup(bot):
     await bot.add_cog(JoinLeave(bot))
