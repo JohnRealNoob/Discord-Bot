@@ -4,12 +4,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - DISCORD_TOKEN=${DISCORD_TOKEN} 
-      - OWNER_ID=${OWNER_ID} 
-      - LAVALINK_HOST=${LAVALINK_HOST} 
-      - LAVALINK_PASSWORD=${LAVALINK_PASSWORD} 
-      - LAVALINK_PORT=${LAVALINK_PORT} 
+    volumes:
+      - db-data:/data
+    env_file:
+      - .env
     restart: unless-stopped  
   
 volumes:
