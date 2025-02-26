@@ -193,7 +193,7 @@ class Music(commands.Cog):
         embed.description = queue_list
         await interaction.followup.send(embed=embed)
 
-    @app_commands.command(name="disconnect", description="Disconnect the bot from voice")
+    @app_commands.command(name="stop", description="Disconnect the bot from voice")
     async def disconnect(self, interaction: discord.Interaction):
         if not await self.check_voice_channel(interaction) or not await self.ensure_node(interaction):
             return
