@@ -84,6 +84,7 @@ class Music(commands.Cog):
         if not player:
             player = await interaction.user.voice.channel.connect(cls=wavelink.Player, self_deaf=True)
             player.autoplay = wavelink.AutoPlayMode.enabled
+            await player.set_volume(50)
 
         try:
             search_result = await wavelink.Playable.search(query)
