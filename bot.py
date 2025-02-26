@@ -21,10 +21,6 @@ class Client(commands.Bot):
         except Exception as e:
             print(f"Failed to sync commands: {e}")
 
-    async def close(self):
-        print("Shutting down bot...")
-        await super().close()  # Closes the bot's HTTP session and event loop
-
 async def main():
     bot = Client()
     try:
@@ -37,11 +33,10 @@ async def main():
         print("Invalid Discord token. Please verify your DISCORD_TOKEN in .env")
     except KeyboardInterrupt:
         print("Bot stopped by user")
-        await bot.close()  # Ensure bot closes cleanly on Ctrl+C
+        await bot.close()  
     except Exception as e:
         print(f"Bot failed to start: {e}")
     finally:
-        # Ensure the bot is closed even if an error occurs
         if not bot.is_closed():
             await bot.close()
 
