@@ -9,6 +9,11 @@ services:
     env_file:
       - .env
     restart: unless-stopped  
-  
+  restarter:
+    image: docker:cli
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    command: ["/bin/sh", "-c", "while true; do sleep 86400; docker restart app_app_1; done"]
+    restart: unless-stopped
+
 volumes:
   db-data:
