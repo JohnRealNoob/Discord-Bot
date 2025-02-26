@@ -70,9 +70,14 @@ class Music(commands.Cog):
             player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
             player.autoplay = wavelink.AutoPlayMode.enabled
 
-        search_result = await wavelink.Playable.search(query)
+        try:
+            search_result = await wavelink.Playable.search(query)
+        except wavelink.LavalinkLoadException:
+            await interaction.followup.send("Invalid url", ephemeral=True)
+            return
+
         if not search_result:
-            await interaction.followup.send("No songs or playlists found!")
+            await interaction.followup.send("No songs or playlists found!", ephemeral=True)
             return
 
         embed = discord.Embed(
@@ -88,20 +93,26 @@ class Music(commands.Cog):
             first_track = tracks[0]
             duration = self.format_duration(first_track.length)
             playlist_link = query if query.startswith("http") else tracks[0].uri
-            await player.play(first_track)
+
             embed.add_field(
-                name=f"Added from playlist: [**{search_result.name}**]({playlist_link})",
-                value=f"**{len(tracks)} song(s)** from the playlist\nTotal Duration: {total_duration}",
+                name=f"Add Playlist",
+                value=f"Added from playlist: [{search_result.name}]({playlist_link})\n**{len(tracks)} song(s)** from the playlist\nTotal Duration: {total_duration}",
                 inline=False
             )
-            for track in tracks[1:]:
-                player.queue.put(track)
+
+            if not player.playing:
+                await player.play(first_track)
+                for track in tracks[1:]:
+                    player.queue.put(track)
+            else:
+                for track in tracks:
+                    player.queue.put(track)
         else:
             track = search_result[0] if isinstance(search_result, list) else search_result
             duration = self.format_duration(track.length)
             embed.add_field(
-                name=f"[**{track.title}**]({track.uri})",
-                value=f"Duration: {duration}",
+                name=f"Add  Queue",
+                value=f"**[{track.title}]({track.uri})**\nDuration: {duration}",
                 inline=False
             )
             if not player.playing:
