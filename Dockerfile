@@ -9,4 +9,4 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
-CMD ["python", "main.py"]
+CMD ["python", "bot.py"]
