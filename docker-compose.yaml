@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - db-data:/data
+    env_file:
+      - .env
+    restart: unless-stopped  
+  
+volumes:
+  db-data:

@@ -1,8 +1,6 @@
 .env
 __pycache__/
-data/joinleave_channel.json
-data/user_playlists.json
-data/guild_playlists.json
+data/
 logs/
 test/
 discord.log

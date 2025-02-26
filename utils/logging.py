@@ -1,18 +1,19 @@
 import logging
 import logging.handlers
+import os
 from utils.manage_file import check_file_exists
 
 def setup_logging():
     # Set up logging
-    dirname = "logs"
-    file_name = "discord.log"
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs", "discord.log")
+    check_file_exists(path)
 
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
     logging.getLogger('discord.http').setLevel(logging.INFO)
 
     handler = logging.handlers.RotatingFileHandler(
-        filename = check_file_exists(dirname=dirname, filename=file_name),
+        filename = path,
         encoding='utf-8',
         maxBytes=32 * 1024 * 1024,  # 32 MiB
         backupCount=5,  # Rotate through 5 files
