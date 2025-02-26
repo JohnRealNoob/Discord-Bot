@@ -23,6 +23,20 @@ class Music(commands.Cog):
     async def on_ready(self):
         await self.connect_nodes()
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+        if member.id != self.bot.user.id:  # Only care about the bot itself
+            return
+    
+        player: wavelink.Player = member.guild.voice_client
+        if before.channel and not after.channel and player: 
+            player.queue.clear()  
+            if player.playing:   
+                await player.stop()
+            await player.disconnect(force=True) 
+            if before.channel.guild.system_channel: 
+                await before.channel.guild.system_channel.send("Music bot disconnected and queue reset!")
+
     async def check_voice_channel(self, interaction: discord.Interaction):
         if not interaction.user.voice:
             await interaction.response.send_message("You need to be in a voice channel!", ephemeral=True)
@@ -60,10 +74,11 @@ class Music(commands.Cog):
     @app_commands.command(name="play", description="Play a song or playlist from YouTube")
     @app_commands.describe(query="The song or playlist URL to search for")
     async def play(self, interaction: discord.Interaction, query: str):
+        await interaction.response.defer()
+        
         if not await self.check_voice_channel(interaction) or not await self.ensure_node(interaction):
             return
 
-        await interaction.response.defer()
         
         player: wavelink.Player = interaction.guild.voice_client
         if not player:
