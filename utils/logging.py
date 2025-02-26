@@ -6,7 +6,9 @@ from utils.manage_file import check_file_exists
 def setup_logging():
     # Set up logging
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs", "discord.log")
-    check_file_exists(path)
+    dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "logs")
+    
+    check_file_exists(file_path=path, dir_path=dir_path)
 
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
