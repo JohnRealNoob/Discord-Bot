@@ -7,7 +7,10 @@ import os
 __all__ = ["update", "get"]
 
 PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "bot.db")
-check_file_exists(PATH)
+DIR_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data")
+
+check_file_exists(file_path=PATH, dir_path=DIR_PATH)
+
 _TYPES = Literal["join_channel_id", "leave_channel_id", "join_image", "leave_image"]
 
 async def insert_guild_id(guild_id: int = None) -> None:
