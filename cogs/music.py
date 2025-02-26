@@ -67,7 +67,7 @@ class Music(commands.Cog):
         
         player: wavelink.Player = interaction.guild.voice_client
         if not player:
-            player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+            player = await interaction.user.voice.channel.connect(cls=wavelink.Player, self_deaf=True)
             player.autoplay = wavelink.AutoPlayMode.enabled
 
         try:
