@@ -40,6 +40,10 @@ class Utility(commands.Cog):
                 f"Failed to DM {user.mention} for: `{reason}` due to an error: {e}",
                 ephemeral=True
             )
+    
+    @app_commands.command(name="src", description="github source code")
+    async def srcode(self, interaction: discord.Interaction):
+        await interaction.response.send_message("https://github.com/JohnRealNoob/Discord-Bot", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(Utility(bot))
